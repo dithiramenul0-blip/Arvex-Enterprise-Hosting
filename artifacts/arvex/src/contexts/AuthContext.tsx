@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 import { useGetMe, User, getGetMeQueryKey } from "@workspace/api-client-react";
+import { useState } from "react";
 
 interface AuthContextType {
   user: User | null;
@@ -14,7 +15,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem("arvex_token"));
 
-  const { data: user, isLoading: isMeLoading, refetch } = useGetMe({
+  const { data: user, isLoading: isMeLoading, isError: isMeError, refetch } = useGetMe({
     query: {
       enabled: !!token,
       retry: false,
@@ -38,8 +39,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [token, refetch]);
 
+  useEffect(() => {
+    if (isMeError) {
+      logout();
+    }
+  }, [isMeError]);
+
+  const hasTokenInStorage = !!localStorage.getItem("arvex_token");
+  const isLoading = isMeLoading || (hasTokenInStorage && !user && !isMeError);
+
   return (
-    <AuthContext.Provider value={{ user: user || null, isLoading: isMeLoading, login, logout, token }}>
+    <AuthContext.Provider value={{ user: user || null, isLoading, login, logout, token }}>
       {children}
     </AuthContext.Provider>
   );
