@@ -21,20 +21,21 @@ router.post("/", authenticate, requireAdmin, async (req: AuthRequest, res) => {
   if (!parsed.success) { res.status(400).json({ error: "Invalid input" }); return; }
   const [plan] = await db.insert(plansTable).values({
     ...parsed.data,
-    features: parsed.data.features as string[],
+    price: parsed.data.price.toString(),
+    features: parsed.data.features as unknown,
   }).returning();
   res.status(201).json({ ...plan, price: parseFloat(plan.price as unknown as string) });
 });
 
 router.get("/:id", async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const [plan] = await db.select().from(plansTable).where(eq(plansTable.id, id)).limit(1);
   if (!plan) { res.status(404).json({ error: "Plan not found" }); return; }
   res.json({ ...plan, price: parseFloat(plan.price as unknown as string) });
 });
 
 router.patch("/:id", authenticate, requireAdmin, async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const parsed = UpdatePlanBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid input" }); return; }
   const update: Record<string, unknown> = { ...parsed.data };
@@ -45,7 +46,7 @@ router.patch("/:id", authenticate, requireAdmin, async (req: AuthRequest, res) =
 });
 
 router.delete("/:id", authenticate, requireAdmin, async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   await db.delete(plansTable).where(eq(plansTable.id, id));
   res.json({ message: "Plan deleted" });
 });

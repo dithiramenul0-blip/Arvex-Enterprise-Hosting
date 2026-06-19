@@ -30,7 +30,7 @@ export class PterodactylClient {
     this.appKey = appKey;
   }
 
-  private async appRequest(path: string, method = "GET", body?: unknown) {
+  private async appRequest(path: string, method = "GET", body?: unknown): Promise<any> {
     const res = await fetch(`${this.baseUrl}/api/application${path}`, {
       method,
       headers: {

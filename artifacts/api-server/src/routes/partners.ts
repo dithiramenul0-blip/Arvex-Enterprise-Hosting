@@ -19,7 +19,7 @@ router.post("/", authenticate, requireAdmin, async (req: AuthRequest, res) => {
 });
 
 router.delete("/:id", authenticate, requireAdmin, async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   await db.delete(partnersTable).where(eq(partnersTable.id, id));
   res.json({ message: "Partner removed" });
 });

@@ -19,7 +19,7 @@ router.get("/", authenticate, async (req: AuthRequest, res) => {
 });
 
 router.get("/:id", authenticate, async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const [svc] = await db.select().from(servicesTable).where(eq(servicesTable.id, id)).limit(1);
   if (!svc || (svc.userId !== req.userId && req.userRole !== "admin")) {
     res.status(404).json({ error: "Service not found" }); return;
@@ -28,19 +28,19 @@ router.get("/:id", authenticate, async (req: AuthRequest, res) => {
 });
 
 router.post("/:id/suspend", authenticate, requireAdmin, async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   await db.update(servicesTable).set({ status: "suspended" }).where(eq(servicesTable.id, id));
   res.json({ message: "Service suspended" });
 });
 
 router.post("/:id/unsuspend", authenticate, requireAdmin, async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   await db.update(servicesTable).set({ status: "active" }).where(eq(servicesTable.id, id));
   res.json({ message: "Service unsuspended" });
 });
 
 router.get("/:id/provision-status", authenticate, async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const [svc] = await db.select().from(servicesTable).where(eq(servicesTable.id, id)).limit(1);
   if (!svc || (svc.userId !== req.userId && req.userRole !== "admin")) {
     res.status(404).json({ error: "Service not found" }); return;

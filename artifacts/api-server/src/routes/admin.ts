@@ -12,7 +12,7 @@ router.get("/users", authenticate, requireAdmin, async (_req, res) => {
 });
 
 router.patch("/users/:id", authenticate, requireAdmin, async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const parsed = AdminUpdateUserBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid input" }); return; }
   const [user] = await db.update(usersTable).set(parsed.data).where(eq(usersTable.id, id)).returning();
@@ -21,7 +21,7 @@ router.patch("/users/:id", authenticate, requireAdmin, async (req: AuthRequest, 
 });
 
 router.post("/users/:id/ban", authenticate, requireAdmin, async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   await db.update(usersTable).set({ status: "banned" }).where(eq(usersTable.id, id));
   res.json({ message: "User banned" });
 });

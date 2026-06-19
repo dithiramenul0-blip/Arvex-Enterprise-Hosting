@@ -65,7 +65,7 @@ router.post("/", authenticate, async (req: AuthRequest, res) => {
 });
 
 router.get("/:id", authenticate, async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const [order] = await db.select().from(ordersTable).where(eq(ordersTable.id, id)).limit(1);
   if (!order || (order.userId !== req.userId && req.userRole !== "admin")) {
     res.status(404).json({ error: "Order not found" }); return;

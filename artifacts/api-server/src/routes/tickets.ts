@@ -34,7 +34,7 @@ router.post("/", authenticate, async (req: AuthRequest, res) => {
 });
 
 router.get("/:id", authenticate, async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const [ticket] = await db.select().from(ticketsTable).where(eq(ticketsTable.id, id)).limit(1);
   if (!ticket || (ticket.userId !== req.userId && req.userRole !== "admin")) {
     res.status(404).json({ error: "Ticket not found" }); return;
@@ -44,7 +44,7 @@ router.get("/:id", authenticate, async (req: AuthRequest, res) => {
 });
 
 router.post("/:id/reply", authenticate, async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const parsed = ReplyTicketBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid input" }); return; }
   const [ticket] = await db.select().from(ticketsTable).where(eq(ticketsTable.id, id)).limit(1);
@@ -63,7 +63,7 @@ router.post("/:id/reply", authenticate, async (req: AuthRequest, res) => {
 });
 
 router.post("/:id/close", authenticate, async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const [ticket] = await db.select().from(ticketsTable).where(eq(ticketsTable.id, id)).limit(1);
   if (!ticket || (ticket.userId !== req.userId && req.userRole !== "admin")) {
     res.status(404).json({ error: "Ticket not found" }); return;

@@ -104,7 +104,7 @@ router.get("/plan-mappings", authenticate, requireAdmin, async (_req, res) => {
 });
 
 router.put("/plan-mappings/:planId", authenticate, requireAdmin, async (req: AuthRequest, res) => {
-  const planId = parseInt(req.params.planId);
+  const planId = parseInt(req.params.planId as string);
   const body = req.body as Record<string, unknown>;
   const existing = await db.select().from(planProvisionMappingTable).where(eq(planProvisionMappingTable.planId, planId)).limit(1);
   const data = {
@@ -154,7 +154,7 @@ router.get("/provisions", authenticate, requireAdmin, async (_req, res) => {
 });
 
 router.post("/provisions/:serviceId/action", authenticate, requireAdmin, async (req: AuthRequest, res) => {
-  const serviceId = parseInt(req.params.serviceId);
+  const serviceId = parseInt(req.params.serviceId as string);
   const { action } = req.body as { action: string };
   const validActions = ["start", "stop", "restart", "kill", "reinstall", "delete", "suspend", "unsuspend"];
   if (!validActions.includes(action)) {
