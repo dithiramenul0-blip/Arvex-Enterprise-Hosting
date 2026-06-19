@@ -117,6 +117,7 @@ export const PlanCategory = {
   bot: 'bot',
   vds: 'vds',
   web: 'web',
+  v2ray: 'v2ray',
 } as const;
 
 export type PlanBillingCycle = typeof PlanBillingCycle[keyof typeof PlanBillingCycle];
@@ -143,6 +144,8 @@ export interface Plan {
   storage?: string | null;
   /** @nullable */
   bandwidth?: string | null;
+  /** @nullable */
+  imageUrl?: string | null;
   isActive: boolean;
   isFeatured?: boolean;
 }
@@ -157,6 +160,7 @@ export interface PlanInput {
   ram?: string;
   storage?: string;
   bandwidth?: string;
+  imageUrl?: string;
   isActive?: boolean;
   isFeatured?: boolean;
 }
@@ -165,6 +169,7 @@ export interface PlanUpdate {
   name?: string;
   price?: number;
   features?: string[];
+  imageUrl?: string;
   isActive?: boolean;
   isFeatured?: boolean;
 }

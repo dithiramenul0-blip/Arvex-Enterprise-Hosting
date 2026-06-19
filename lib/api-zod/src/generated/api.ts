@@ -151,7 +151,7 @@ export const GetPlansQueryParams = zod.object({
 export const GetPlansResponseItem = zod.object({
   "id": zod.number(),
   "name": zod.string(),
-  "category": zod.enum(['vps', 'minecraft', 'bot', 'vds', 'web']),
+  "category": zod.enum(['vps', 'minecraft', 'bot', 'vds', 'web', 'v2ray']),
   "price": zod.number(),
   "billingCycle": zod.enum(['monthly', 'quarterly', 'annually']),
   "features": zod.array(zod.string()),
@@ -159,6 +159,7 @@ export const GetPlansResponseItem = zod.object({
   "ram": zod.string().nullish(),
   "storage": zod.string().nullish(),
   "bandwidth": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
   "isActive": zod.boolean(),
   "isFeatured": zod.boolean().optional()
 })
@@ -178,6 +179,7 @@ export const CreatePlanBody = zod.object({
   "ram": zod.string().optional(),
   "storage": zod.string().optional(),
   "bandwidth": zod.string().optional(),
+  "imageUrl": zod.string().optional(),
   "isActive": zod.boolean().optional(),
   "isFeatured": zod.boolean().optional()
 })
@@ -193,7 +195,7 @@ export const GetPlanParams = zod.object({
 export const GetPlanResponse = zod.object({
   "id": zod.number(),
   "name": zod.string(),
-  "category": zod.enum(['vps', 'minecraft', 'bot', 'vds', 'web']),
+  "category": zod.enum(['vps', 'minecraft', 'bot', 'vds', 'web', 'v2ray']),
   "price": zod.number(),
   "billingCycle": zod.enum(['monthly', 'quarterly', 'annually']),
   "features": zod.array(zod.string()),
@@ -201,6 +203,7 @@ export const GetPlanResponse = zod.object({
   "ram": zod.string().nullish(),
   "storage": zod.string().nullish(),
   "bandwidth": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
   "isActive": zod.boolean(),
   "isFeatured": zod.boolean().optional()
 })
@@ -217,6 +220,7 @@ export const UpdatePlanBody = zod.object({
   "name": zod.string().optional(),
   "price": zod.number().optional(),
   "features": zod.array(zod.string()).optional(),
+  "imageUrl": zod.string().optional(),
   "isActive": zod.boolean().optional(),
   "isFeatured": zod.boolean().optional()
 })
@@ -224,7 +228,7 @@ export const UpdatePlanBody = zod.object({
 export const UpdatePlanResponse = zod.object({
   "id": zod.number(),
   "name": zod.string(),
-  "category": zod.enum(['vps', 'minecraft', 'bot', 'vds', 'web']),
+  "category": zod.enum(['vps', 'minecraft', 'bot', 'vds', 'web', 'v2ray']),
   "price": zod.number(),
   "billingCycle": zod.enum(['monthly', 'quarterly', 'annually']),
   "features": zod.array(zod.string()),
@@ -232,6 +236,7 @@ export const UpdatePlanResponse = zod.object({
   "ram": zod.string().nullish(),
   "storage": zod.string().nullish(),
   "bandwidth": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
   "isActive": zod.boolean(),
   "isFeatured": zod.boolean().optional()
 })

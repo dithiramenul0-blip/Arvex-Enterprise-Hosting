@@ -13,6 +13,7 @@ export const plansTable = pgTable("plans", {
   ram: varchar("ram", { length: 50 }),
   storage: varchar("storage", { length: 50 }),
   bandwidth: varchar("bandwidth", { length: 50 }),
+  imageUrl: text("image_url"),
   isActive: boolean("is_active").notNull().default(true),
   isFeatured: boolean("is_featured").notNull().default(false),
   sortOrder: integer("sort_order").notNull().default(0),

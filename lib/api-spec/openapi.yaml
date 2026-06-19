@@ -1059,7 +1059,7 @@ components:
           type: string
         category:
           type: string
-          enum: [vps, minecraft, bot, vds, web]
+          enum: [vps, minecraft, bot, vds, web, v2ray]
         price:
           type: number
         billingCycle:
@@ -1076,6 +1076,8 @@ components:
         storage:
           type: ["string", "null"]
         bandwidth:
+          type: ["string", "null"]
+        imageUrl:
           type: ["string", "null"]
         isActive:
           type: boolean
@@ -1106,6 +1108,8 @@ components:
           type: string
         bandwidth:
           type: string
+        imageUrl:
+          type: string
         isActive:
           type: boolean
         isFeatured:
@@ -1122,6 +1126,8 @@ components:
           type: array
           items:
             type: string
+        imageUrl:
+          type: string
         isActive:
           type: boolean
         isFeatured:

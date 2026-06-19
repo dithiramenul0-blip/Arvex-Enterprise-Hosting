@@ -16,6 +16,7 @@ export interface PlanInput {
   ram?: string;
   storage?: string;
   bandwidth?: string;
+  imageUrl?: string;
   isActive?: boolean;
   isFeatured?: boolean;
 }

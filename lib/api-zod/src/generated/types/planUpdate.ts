@@ -10,6 +10,7 @@ export interface PlanUpdate {
   name?: string;
   price?: number;
   features?: string[];
+  imageUrl?: string;
   isActive?: boolean;
   isFeatured?: boolean;
 }

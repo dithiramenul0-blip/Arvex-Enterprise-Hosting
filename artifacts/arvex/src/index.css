@@ -70,52 +70,52 @@
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
-  --background: 0 0% 5%; /* #0D0D0D */
+  --background: 270 30% 4%; /* #08060F — deep purple-black */
   --foreground: 0 0% 98%;
 
-  --border: 0 0% 15%;
+  --border: 270 20% 15%;
 
-  --card: 0 0% 7%; /* #111111 */
+  --card: 270 25% 7%; /* #100C1A */
   --card-foreground: 0 0% 98%;
-  --card-border: 0 100% 15%; /* #4A0000 subtle border */
+  --card-border: 270 60% 25%;
 
-  --sidebar: 0 0% 5%;
+  --sidebar: 270 30% 4%;
   --sidebar-foreground: 0 0% 90%;
-  --sidebar-border: 0 0% 15%;
-  --sidebar-primary: 0 100% 21%;
+  --sidebar-border: 270 20% 15%;
+  --sidebar-primary: 271 91% 55%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 0 0% 10%;
+  --sidebar-accent: 270 20% 10%;
   --sidebar-accent-foreground: 0 0% 98%;
-  --sidebar-ring: 0 100% 27%;
+  --sidebar-ring: 271 91% 65%;
 
-  --popover: 0 0% 7%;
+  --popover: 270 25% 7%;
   --popover-foreground: 0 0% 98%;
-  --popover-border: 0 0% 15%;
+  --popover-border: 270 20% 15%;
 
-  /* Crimson red accents: #8B0000 */
-  --primary: 0 100% 27%;
+  /* Purple primary: #7C3AED */
+  --primary: 262 83% 58%;
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 0 0% 15%;
+  --secondary: 270 20% 15%;
   --secondary-foreground: 0 0% 98%;
 
-  --muted: 0 0% 12%;
-  --muted-foreground: 0 0% 65%;
+  --muted: 270 20% 12%;
+  --muted-foreground: 270 10% 65%;
 
-  --accent: 0 100% 21%; /* #6B0000 */
+  --accent: 271 91% 45%;
   --accent-foreground: 0 0% 100%;
 
-  --destructive: 0 62.8% 30.6%;
+  --destructive: 0 62.8% 40%;
   --destructive-foreground: 0 0% 98%;
 
-  --input: 0 0% 18%;
-  --ring: 0 100% 27%;
+  --input: 270 20% 15%;
+  --ring: 262 83% 58%;
 
-  --chart-1: 0 100% 27%;
-  --chart-2: 0 100% 21%;
-  --chart-3: 0 100% 18%;
-  --chart-4: 0 100% 15%;
-  --chart-5: 0 0% 20%;
+  --chart-1: 262 83% 58%;
+  --chart-2: 271 91% 45%;
+  --chart-3: 280 67% 45%;
+  --chart-4: 290 50% 40%;
+  --chart-5: 270 20% 20%;
 
   --app-font-sans: 'Inter', sans-serif;
   --app-font-serif: 'Space Grotesk', sans-serif;
@@ -147,20 +147,20 @@
 }
 
 .glass-panel {
-  @apply bg-card/40 backdrop-blur-md border border-red-900/30 shadow-[0_0_15px_rgba(139,0,0,0.1)];
+  @apply bg-card/40 backdrop-blur-md border border-purple-900/30 shadow-[0_0_15px_rgba(124,58,237,0.08)];
 }
 
 .glow-text {
-  text-shadow: 0 0 20px rgba(139,0,0,0.8), 0 0 40px rgba(139,0,0,0.4);
+  text-shadow: 0 0 20px rgba(124,58,237,0.8), 0 0 40px rgba(168,85,247,0.4);
 }
 
 .btn-glow {
-  box-shadow: 0 0 15px rgba(139,0,0,0.5), 0 0 30px rgba(139,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  box-shadow: 0 0 20px rgba(124,58,237,0.6), 0 0 40px rgba(124,58,237,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
 }
 
 .border-glow {
-  border: 1px solid rgba(139,0,0,0.5);
-  box-shadow: 0 0 10px rgba(139,0,0,0.3), inset 0 0 10px rgba(139,0,0,0.05);
+  border: 1px solid rgba(124,58,237,0.5);
+  box-shadow: 0 0 12px rgba(124,58,237,0.3), inset 0 0 10px rgba(124,58,237,0.05);
 }
 
 .scanline {
@@ -168,8 +168,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px rgba(139,0,0,0.3); }
-  50% { box-shadow: 0 0 20px rgba(139,0,0,0.8); }
+  0%, 100% { box-shadow: 0 0 8px rgba(124,58,237,0.4); }
+  50% { box-shadow: 0 0 25px rgba(124,58,237,0.9), 0 0 50px rgba(168,85,247,0.4); }
 }
 
 .animate-pulse-glow {
@@ -192,7 +192,52 @@
 }
 
 .animate-scroll {
-  animation: scroll 30s linear infinite;
+  animation: scroll 40s linear infinite;
+}
+
+@keyframes scroll-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-scroll-reverse {
+  animation: scroll-reverse 35s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmer-text {
+  background: linear-gradient(90deg, #7c3aed, #a855f7, #c084fc, #a855f7, #7c3aed);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+@keyframes grid-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+.hero-grid {
+  background-image: 
+    linear-gradient(rgba(124,58,237,0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.15) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: grid-pulse 4s ease-in-out infinite;
+}
+
+.service-card-image {
+  transition: transform 0.6s ease, filter 0.4s ease;
+}
+
+.service-card:hover .service-card-image {
+  transform: scale(1.08);
+  filter: brightness(0.7) saturate(1.2);
 }
 
 @layer utilities {

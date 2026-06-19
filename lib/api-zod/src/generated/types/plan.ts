@@ -23,6 +23,8 @@ export interface Plan {
   storage?: string | null;
   /** @nullable */
   bandwidth?: string | null;
+  /** @nullable */
+  imageUrl?: string | null;
   isActive: boolean;
   isFeatured?: boolean;
 }

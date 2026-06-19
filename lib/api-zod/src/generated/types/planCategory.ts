@@ -15,4 +15,5 @@ export const PlanCategory = {
   bot: 'bot',
   vds: 'vds',
   web: 'web',
+  v2ray: 'v2ray',
 } as const;

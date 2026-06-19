@@ -30,7 +30,6 @@ import AdminTickets from "@/pages/admin/Tickets";
 import AdminPartners from "@/pages/admin/Partners";
 import AdminContent from "@/pages/admin/Content";
 
-// New Admin Pages
 import AdminPterodactyl from "@/pages/admin/Pterodactyl";
 import AdminProxmox from "@/pages/admin/Proxmox";
 import AdminPlanMappings from "@/pages/admin/PlanMappings";
@@ -63,23 +62,23 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/vps">{(params) => <Plans category="vps" title="VPS Hosting" />}</Route>
-      <Route path="/minecraft">{(params) => <Plans category="minecraft" title="Minecraft Hosting" />}</Route>
-      <Route path="/bot-hosting">{(params) => <Plans category="bot" title="Bot Hosting" />}</Route>
-      <Route path="/vds">{(params) => <Plans category="vds" title="VDS Hosting" />}</Route>
-      <Route path="/web-hosting">{(params) => <Plans category="web" title="Web Hosting" />}</Route>
-      
+      <Route path="/vps">{() => <Plans category="vps" title="VPS Hosting" />}</Route>
+      <Route path="/minecraft">{() => <Plans category="minecraft" title="Minecraft Hosting" />}</Route>
+      <Route path="/bot-hosting">{() => <Plans category="bot" title="Bot Hosting" />}</Route>
+      <Route path="/vds">{() => <Plans category="vds" title="VDS Hosting" />}</Route>
+      <Route path="/web-hosting">{() => <Plans category="web" title="Web Hosting" />}</Route>
+      <Route path="/v2ray">{() => <Plans category="v2ray" title="V2Ray Proxy" />}</Route>
+
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/forgot-password" component={ForgotPassword} />
 
-      <Route path="/terms">{(params) => <ContentPage slug="terms" />}</Route>
-      <Route path="/privacy">{(params) => <ContentPage slug="privacy" />}</Route>
-      <Route path="/refund">{(params) => <ContentPage slug="refund" />}</Route>
-      <Route path="/sla">{(params) => <ContentPage slug="sla" />}</Route>
-      <Route path="/aup">{(params) => <ContentPage slug="aup" />}</Route>
+      <Route path="/terms">{() => <ContentPage slug="terms" />}</Route>
+      <Route path="/privacy">{() => <ContentPage slug="privacy" />}</Route>
+      <Route path="/refund">{() => <ContentPage slug="refund" />}</Route>
+      <Route path="/sla">{() => <ContentPage slug="sla" />}</Route>
+      <Route path="/aup">{() => <ContentPage slug="aup" />}</Route>
 
-      {/* Client Routes */}
       <Route path="/client/*">
         <ProtectedRoute component={() => (
           <ClientLayout>
@@ -96,7 +95,6 @@ function Router() {
         )} />
       </Route>
 
-      {/* Admin Routes */}
       <Route path="/admin/*">
         <ProtectedRoute adminOnly component={() => (
           <AdminLayout>
