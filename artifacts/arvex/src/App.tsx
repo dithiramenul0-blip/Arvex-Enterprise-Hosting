@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -41,17 +42,20 @@ function ProtectedRoute({ component: Component, adminOnly = false }: { component
   const { user, isLoading } = useAuth();
   const [, setLocation] = useLocation();
 
-  if (isLoading) {
+  useEffect(() => {
+    if (isLoading) return;
+    if (!user) {
+      setLocation("/login");
+    } else if (adminOnly && user.role !== "admin") {
+      setLocation("/client");
+    }
+  }, [isLoading, user, adminOnly, setLocation]);
+
+  if (isLoading || !user) {
     return <div className="min-h-screen flex items-center justify-center bg-background"><div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
   }
 
-  if (!user) {
-    setLocation("/login");
-    return null;
-  }
-
-  if (adminOnly && user.role !== 'admin') {
-    setLocation("/client");
+  if (adminOnly && user.role !== "admin") {
     return null;
   }
 
