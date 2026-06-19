@@ -28,8 +28,8 @@ export default function NewTicket() {
         toast({ title: "Ticket Created", description: "Your support ticket has been opened." });
         setLocation(`/client/tickets/${data.id}`);
       },
-      onError: (err) => {
-        toast({ variant: "destructive", title: "Error", description: err.error || "Failed to create ticket" });
+      onError: (err: any) => {
+        toast({ variant: "destructive", title: "Error", description: err?.error || "Failed to create ticket" });
       }
     }
   });

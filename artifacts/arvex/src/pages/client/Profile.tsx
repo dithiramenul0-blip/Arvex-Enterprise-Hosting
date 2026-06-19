@@ -28,8 +28,8 @@ export default function ClientProfile() {
       onSuccess: () => {
         toast({ title: "Profile updated", description: "Your profile has been saved." });
       },
-      onError: (err) => {
-        toast({ variant: "destructive", title: "Error", description: err.error || "Failed to update profile." });
+      onError: (err: any) => {
+        toast({ variant: "destructive", title: "Error", description: err?.error || "Failed to update profile." });
       }
     }
   });
@@ -40,8 +40,8 @@ export default function ClientProfile() {
         setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
         toast({ title: "Password changed", description: "Your password has been updated." });
       },
-      onError: (err) => {
-        toast({ variant: "destructive", title: "Error", description: err.error || "Failed to change password." });
+      onError: (err: any) => {
+        toast({ variant: "destructive", title: "Error", description: err?.error || "Failed to change password." });
       }
     }
   });

@@ -47,7 +47,7 @@ export default function TicketDetail({ id }: { id: string }) {
   const handleReply = (e: React.FormEvent) => {
     e.preventDefault();
     if (!replyMessage.trim()) return;
-    replyMutation.mutate({ ticketId, data: { message: replyMessage } });
+    replyMutation.mutate({ id: ticketId, data: { message: replyMessage } });
   };
 
   return (
@@ -73,7 +73,7 @@ export default function TicketDetail({ id }: { id: string }) {
           <Button 
             variant="outline" 
             className="border-red-500/50 text-red-500 hover:bg-red-500/20"
-            onClick={() => closeMutation.mutate({ ticketId })}
+            onClick={() => closeMutation.mutate({ id: ticketId })}
             disabled={closeMutation.isPending}
           >
             Close Ticket

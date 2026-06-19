@@ -24,12 +24,13 @@ export default function AdminProxmox() {
 
   useEffect(() => {
     if (settings) {
+      const s = settings as any;
       setFormData({
-        url: settings.url || "",
-        username: settings.username || "",
-        password: settings.password ? "********" : "",
-        defaultNode: settings.defaultNode || "",
-        isEnabled: settings.isEnabled || false
+        url: s.apiUrl || "",
+        username: s.username || "",
+        password: s.password ? "********" : "",
+        defaultNode: s.defaultNodeId || "",
+        isEnabled: s.isEnabled || false
       });
     }
   }, [settings]);

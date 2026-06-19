@@ -1,4 +1,4 @@
-import { useGetServices, useGetProvisionStatus } from "@workspace/api-client-react";
+import { useGetServices, useGetProvisionStatus, getGetProvisionStatusQueryKey } from "@workspace/api-client-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -71,7 +71,8 @@ function ServiceRow({ service, getStatusColor }: { service: any, getStatusColor:
   const { data: provStatus } = useGetProvisionStatus(service.id, {
     query: { 
       enabled: !!service.id && isProvisioning,
-      refetchInterval: isProvisioning ? 5000 : false
+      refetchInterval: isProvisioning ? 5000 : false,
+      queryKey: getGetProvisionStatusQueryKey(service.id)
     }
   });
 

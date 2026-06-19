@@ -22,11 +22,11 @@ export default function Register() {
         toast({ title: "Account created", description: "Welcome to ArveX Hosting." });
         setLocation("/client");
       },
-      onError: (error) => {
+      onError: (error: any) => {
         toast({ 
           variant: "destructive", 
           title: "Registration Failed", 
-          description: error.error || "Please check your information." 
+          description: error?.error || "Please check your information." 
         });
       }
     }

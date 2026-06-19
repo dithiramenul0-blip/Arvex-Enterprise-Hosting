@@ -28,7 +28,7 @@ export default function AdminProvisions() {
   const handleAction = (serviceId: number, action: any) => {
     serverAction.mutate({
       data: { action },
-      params: { serviceId }
+      serviceId
     }, {
       onSuccess: () => {
         toast({ title: "Command Sent", description: `Executing ${action} on server...` });
@@ -50,13 +50,13 @@ export default function AdminProvisions() {
     }
   };
 
-  const filteredProvisions = provisions?.filter(p => filter === "all" || p.status === filter) || [];
+  const filteredProvisions = provisions?.filter(p => filter === "all" || p.provisionStatus === filter) || [];
 
   const stats = {
     total: provisions?.length || 0,
-    ready: provisions?.filter(p => p.status === 'completed').length || 0,
-    building: provisions?.filter(p => p.status === 'provisioning').length || 0,
-    failed: provisions?.filter(p => p.status === 'failed').length || 0,
+    ready: provisions?.filter(p => p.provisionStatus === 'completed').length || 0,
+    building: provisions?.filter(p => p.provisionStatus === 'provisioning').length || 0,
+    failed: provisions?.filter(p => p.provisionStatus === 'failed').length || 0,
   };
 
   return (

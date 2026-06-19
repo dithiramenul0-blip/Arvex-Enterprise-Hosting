@@ -19,8 +19,8 @@ export default function ForgotPassword() {
         setSubmitted(true);
         toast({ title: "Email sent", description: "If an account exists, a reset link was sent." });
       },
-      onError: (error) => {
-        toast({ variant: "destructive", title: "Error", description: error.error || "Failed to process request." });
+      onError: (error: any) => {
+        toast({ variant: "destructive", title: "Error", description: error?.error || "Failed to process request." });
       }
     }
   });

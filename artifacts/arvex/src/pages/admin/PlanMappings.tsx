@@ -39,7 +39,7 @@ export default function AdminPlanMappings() {
   const handleSave = () => {
     updateMapping.mutate({ 
       data: formData, 
-      params: { planId: editingPlan.id } 
+      planId: editingPlan.id 
     }, {
       onSuccess: () => {
         toast({ title: "Success", description: "Plan mapping updated" });
@@ -92,7 +92,7 @@ export default function AdminPlanMappings() {
               ) : (
                 plans?.map((plan) => {
                   const mapping = mappings?.find(m => m.planId === plan.id);
-                  const provider = mapping?.providerType || 'manual';
+                  const provider = mapping?.provider || 'manual';
                   
                   return (
                     <TableRow key={plan.id} className="border-b border-white/5 hover:bg-white/5">
@@ -147,7 +147,7 @@ export default function AdminPlanMappings() {
             <div className="p-4 space-y-6 overflow-y-auto">
               <div className="space-y-2">
                 <Label>Provider Type</Label>
-                <Select value={formData.providerType} onValueChange={(v) => setFormData({...formData, providerType: v})}>
+                <Select value={formData.provider} onValueChange={(v) => setFormData({...formData, provider: v})}>
                   <SelectTrigger className="bg-black/50 border-white/10">
                     <SelectValue />
                   </SelectTrigger>
@@ -159,7 +159,7 @@ export default function AdminPlanMappings() {
                 </Select>
               </div>
 
-              {formData.providerType === 'pterodactyl' && (
+              {formData.provider === 'pterodactyl' && (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Node ID (leave empty for default)</Label>
@@ -172,7 +172,7 @@ export default function AdminPlanMappings() {
                 </div>
               )}
 
-              {formData.providerType === 'proxmox' && (
+              {formData.provider === 'proxmox' && (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Node (leave empty for default)</Label>

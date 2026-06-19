@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useGetPterodactylSettings, useUpdatePterodactylSettings, useGetPterodactylNodes, useGetPterodactylEggs } from "@workspace/api-client-react";
+import { useGetPterodactylSettings, useUpdatePterodactylSettings, useGetPterodactylNodes, useGetPterodactylEggs, getGetPterodactylNodesQueryKey, getGetPterodactylEggsQueryKey } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,13 +25,14 @@ export default function AdminPterodactyl() {
 
   useEffect(() => {
     if (settings) {
+      const s = settings as any;
       setFormData({
-        url: settings.url || "",
-        apiKey: settings.apiKey ? "********" : "",
-        clientKey: settings.clientKey ? "********" : "",
-        defaultNodeId: settings.defaultNodeId || "",
-        defaultEggId: settings.defaultEggId || "",
-        isEnabled: settings.isEnabled || false
+        url: s.apiUrl || "",
+        apiKey: s.apiKeyApp ? "********" : "",
+        clientKey: s.apiKey ? "********" : "",
+        defaultNodeId: s.defaultNodeId || "",
+        defaultEggId: s.defaultEggId || "",
+        isEnabled: s.isEnabled || false
       });
     }
   }, [settings]);
@@ -52,8 +53,8 @@ export default function AdminPterodactyl() {
     });
   };
 
-  const { data: nodes, refetch: fetchNodes, isFetching: loadingNodes } = useGetPterodactylNodes({ query: { enabled: false } });
-  const { data: eggs, refetch: fetchEggs, isFetching: loadingEggs } = useGetPterodactylEggs({ query: { enabled: false } });
+  const { data: nodes, refetch: fetchNodes, isFetching: loadingNodes } = useGetPterodactylNodes({ query: { enabled: false, queryKey: getGetPterodactylNodesQueryKey() } });
+  const { data: eggs, refetch: fetchEggs, isFetching: loadingEggs } = useGetPterodactylEggs({ query: { enabled: false, queryKey: getGetPterodactylEggsQueryKey() } });
 
   if (isLoading) return <div className="p-8 text-center text-white">Loading...</div>;
 

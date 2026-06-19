@@ -23,11 +23,11 @@ export default function Login() {
         toast({ title: "Welcome back", description: "Login successful." });
         setLocation("/client");
       },
-      onError: (error) => {
+      onError: (error: any) => {
         toast({ 
           variant: "destructive", 
           title: "Login Failed", 
-          description: error.error || "Invalid credentials." 
+          description: error?.error || "Invalid credentials." 
         });
       }
     }

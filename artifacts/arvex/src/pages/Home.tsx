@@ -42,7 +42,7 @@ export default function Home() {
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
-  const partnerList = partners?.partners ?? [];
+  const partnerList = partners ?? [];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
