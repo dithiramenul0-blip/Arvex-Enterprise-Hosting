@@ -38,7 +38,13 @@ import AdminProvisions from "@/pages/admin/Provisions";
 
 const queryClient = new QueryClient();
 
-function ProtectedRoute({ component: Component, adminOnly = false }: { component: any, adminOnly?: boolean }) {
+const Spinner = () => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+  </div>
+);
+
+function ProtectedRoute({ component: Component, adminOnly = false }: { component: React.ComponentType, adminOnly?: boolean }) {
   const { user, isLoading } = useAuth();
   const [, setLocation] = useLocation();
 
@@ -51,13 +57,9 @@ function ProtectedRoute({ component: Component, adminOnly = false }: { component
     }
   }, [isLoading, user, adminOnly, setLocation]);
 
-  if (isLoading || !user) {
-    return <div className="min-h-screen flex items-center justify-center bg-background"><div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
-  }
-
-  if (adminOnly && user.role !== "admin") {
-    return null;
-  }
+  if (isLoading) return <Spinner />;
+  if (!user) return <Spinner />;
+  if (adminOnly && user.role !== "admin") return null;
 
   return <Component />;
 }
@@ -65,6 +67,7 @@ function ProtectedRoute({ component: Component, adminOnly = false }: { component
 function Router() {
   return (
     <Switch>
+      {/* Public */}
       <Route path="/" component={Home} />
       <Route path="/vps">{() => <Plans category="vps" title="VPS Hosting" />}</Route>
       <Route path="/minecraft">{() => <Plans category="minecraft" title="Minecraft Hosting" />}</Route>
@@ -73,56 +76,74 @@ function Router() {
       <Route path="/web-hosting">{() => <Plans category="web" title="Web Hosting" />}</Route>
       <Route path="/v2ray">{() => <Plans category="v2ray" title="V2Ray Proxy" />}</Route>
 
+      {/* Auth */}
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/forgot-password" component={ForgotPassword} />
 
+      {/* Content */}
       <Route path="/terms">{() => <ContentPage slug="terms" />}</Route>
       <Route path="/privacy">{() => <ContentPage slug="privacy" />}</Route>
       <Route path="/refund">{() => <ContentPage slug="refund" />}</Route>
       <Route path="/sla">{() => <ContentPage slug="sla" />}</Route>
       <Route path="/aup">{() => <ContentPage slug="aup" />}</Route>
 
+      {/* Client — flat routes */}
       <Route path="/client">
-        <ProtectedRoute component={() => <ClientLayout><ClientDashboard /></ClientLayout>} />
+        {() => <ProtectedRoute component={() => <ClientLayout><ClientDashboard /></ClientLayout>} />}
       </Route>
-      <Route path="/client/:rest*">
-        <ProtectedRoute component={() => (
-          <ClientLayout>
-            <Switch>
-              <Route path="/client/services" component={ClientServices} />
-              <Route path="/client/orders" component={ClientOrders} />
-              <Route path="/client/tickets/new" component={NewTicket} />
-              <Route path="/client/tickets/:id">{(params) => <TicketDetail id={params.id!} />}</Route>
-              <Route path="/client/tickets" component={ClientTickets} />
-              <Route path="/client/profile" component={ClientProfile} />
-              <Route component={NotFound} />
-            </Switch>
-          </ClientLayout>
-        )} />
+      <Route path="/client/services">
+        {() => <ProtectedRoute component={() => <ClientLayout><ClientServices /></ClientLayout>} />}
+      </Route>
+      <Route path="/client/orders">
+        {() => <ProtectedRoute component={() => <ClientLayout><ClientOrders /></ClientLayout>} />}
+      </Route>
+      <Route path="/client/tickets/new">
+        {() => <ProtectedRoute component={() => <ClientLayout><NewTicket /></ClientLayout>} />}
+      </Route>
+      <Route path="/client/tickets/:id">
+        {(params) => <ProtectedRoute component={() => <ClientLayout><TicketDetail id={params.id!} /></ClientLayout>} />}
+      </Route>
+      <Route path="/client/tickets">
+        {() => <ProtectedRoute component={() => <ClientLayout><ClientTickets /></ClientLayout>} />}
+      </Route>
+      <Route path="/client/profile">
+        {() => <ProtectedRoute component={() => <ClientLayout><ClientProfile /></ClientLayout>} />}
       </Route>
 
+      {/* Admin — flat routes */}
       <Route path="/admin">
-        <ProtectedRoute adminOnly component={() => <AdminLayout><AdminDashboard /></AdminLayout>} />
+        {() => <ProtectedRoute adminOnly component={() => <AdminLayout><AdminDashboard /></AdminLayout>} />}
       </Route>
-      <Route path="/admin/:rest*">
-        <ProtectedRoute adminOnly component={() => (
-          <AdminLayout>
-            <Switch>
-              <Route path="/admin/users" component={AdminUsers} />
-              <Route path="/admin/plans" component={AdminPlans} />
-              <Route path="/admin/services" component={AdminServices} />
-              <Route path="/admin/tickets" component={AdminTickets} />
-              <Route path="/admin/partners" component={AdminPartners} />
-              <Route path="/admin/content" component={AdminContent} />
-              <Route path="/admin/pterodactyl" component={AdminPterodactyl} />
-              <Route path="/admin/proxmox" component={AdminProxmox} />
-              <Route path="/admin/plan-mappings" component={AdminPlanMappings} />
-              <Route path="/admin/provisions" component={AdminProvisions} />
-              <Route component={NotFound} />
-            </Switch>
-          </AdminLayout>
-        )} />
+      <Route path="/admin/users">
+        {() => <ProtectedRoute adminOnly component={() => <AdminLayout><AdminUsers /></AdminLayout>} />}
+      </Route>
+      <Route path="/admin/plans">
+        {() => <ProtectedRoute adminOnly component={() => <AdminLayout><AdminPlans /></AdminLayout>} />}
+      </Route>
+      <Route path="/admin/services">
+        {() => <ProtectedRoute adminOnly component={() => <AdminLayout><AdminServices /></AdminLayout>} />}
+      </Route>
+      <Route path="/admin/tickets">
+        {() => <ProtectedRoute adminOnly component={() => <AdminLayout><AdminTickets /></AdminLayout>} />}
+      </Route>
+      <Route path="/admin/partners">
+        {() => <ProtectedRoute adminOnly component={() => <AdminLayout><AdminPartners /></AdminLayout>} />}
+      </Route>
+      <Route path="/admin/content">
+        {() => <ProtectedRoute adminOnly component={() => <AdminLayout><AdminContent /></AdminLayout>} />}
+      </Route>
+      <Route path="/admin/pterodactyl">
+        {() => <ProtectedRoute adminOnly component={() => <AdminLayout><AdminPterodactyl /></AdminLayout>} />}
+      </Route>
+      <Route path="/admin/proxmox">
+        {() => <ProtectedRoute adminOnly component={() => <AdminLayout><AdminProxmox /></AdminLayout>} />}
+      </Route>
+      <Route path="/admin/plan-mappings">
+        {() => <ProtectedRoute adminOnly component={() => <AdminLayout><AdminPlanMappings /></AdminLayout>} />}
+      </Route>
+      <Route path="/admin/provisions">
+        {() => <ProtectedRoute adminOnly component={() => <AdminLayout><AdminProvisions /></AdminLayout>} />}
       </Route>
 
       <Route component={NotFound} />
@@ -135,7 +156,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <WouterRouter base="">
             <Router />
           </WouterRouter>
           <Toaster />
