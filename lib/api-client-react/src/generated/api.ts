@@ -38,11 +38,20 @@ import type {
   PartnerInput,
   Plan,
   PlanInput,
+  PlanProvisionMapping,
+  PlanProvisionMappingInput,
   PlanUpdate,
   ProfileUpdate,
+  ProvisionDetail,
+  ProvisionSettings,
+  ProvisionSettingsInput,
+  ProvisionStatus,
+  PterodactylEgg,
+  PterodactylNode,
   PublicStats,
   RegisterInput,
   ResetPasswordInput,
+  ServerActionInput,
   Service,
   Ticket,
   TicketDetail,
@@ -2625,6 +2634,831 @@ export function useAdminGetServices<TData = Awaited<ReturnType<typeof adminGetSe
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getAdminGetServicesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetPterodactylSettingsUrl = () => {
+
+
+
+
+  return `/api/admin/settings/pterodactyl`
+}
+
+/**
+ * @summary Get Pterodactyl integration settings (admin)
+ */
+export const getPterodactylSettings = async ( options?: RequestInit): Promise<ProvisionSettings> => {
+
+  return customFetch<ProvisionSettings>(getGetPterodactylSettingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPterodactylSettingsQueryKey = () => {
+    return [
+    `/api/admin/settings/pterodactyl`
+    ] as const;
+    }
+
+
+export const getGetPterodactylSettingsQueryOptions = <TData = Awaited<ReturnType<typeof getPterodactylSettings>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPterodactylSettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPterodactylSettingsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPterodactylSettings>>> = ({ signal }) => getPterodactylSettings({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPterodactylSettings>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPterodactylSettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getPterodactylSettings>>>
+export type GetPterodactylSettingsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get Pterodactyl integration settings (admin)
+ */
+
+export function useGetPterodactylSettings<TData = Awaited<ReturnType<typeof getPterodactylSettings>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPterodactylSettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPterodactylSettingsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getUpdatePterodactylSettingsUrl = () => {
+
+
+
+
+  return `/api/admin/settings/pterodactyl`
+}
+
+/**
+ * @summary Update Pterodactyl integration settings (admin)
+ */
+export const updatePterodactylSettings = async (provisionSettingsInput: ProvisionSettingsInput, options?: RequestInit): Promise<ProvisionSettings> => {
+
+  return customFetch<ProvisionSettings>(getUpdatePterodactylSettingsUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      provisionSettingsInput,)
+  }
+);}
+
+
+
+
+export const getUpdatePterodactylSettingsMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePterodactylSettings>>, TError,{data: BodyType<ProvisionSettingsInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePterodactylSettings>>, TError,{data: BodyType<ProvisionSettingsInput>}, TContext> => {
+
+const mutationKey = ['updatePterodactylSettings'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePterodactylSettings>>, {data: BodyType<ProvisionSettingsInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  updatePterodactylSettings(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePterodactylSettingsMutationResult = NonNullable<Awaited<ReturnType<typeof updatePterodactylSettings>>>
+    export type UpdatePterodactylSettingsMutationBody = BodyType<ProvisionSettingsInput>
+    export type UpdatePterodactylSettingsMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update Pterodactyl integration settings (admin)
+ */
+export const useUpdatePterodactylSettings = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePterodactylSettings>>, TError,{data: BodyType<ProvisionSettingsInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePterodactylSettings>>,
+        TError,
+        {data: BodyType<ProvisionSettingsInput>},
+        TContext
+      > => {
+      return useMutation(getUpdatePterodactylSettingsMutationOptions(options));
+    }
+
+export const getGetProxmoxSettingsUrl = () => {
+
+
+
+
+  return `/api/admin/settings/proxmox`
+}
+
+/**
+ * @summary Get Proxmox integration settings (admin)
+ */
+export const getProxmoxSettings = async ( options?: RequestInit): Promise<ProvisionSettings> => {
+
+  return customFetch<ProvisionSettings>(getGetProxmoxSettingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetProxmoxSettingsQueryKey = () => {
+    return [
+    `/api/admin/settings/proxmox`
+    ] as const;
+    }
+
+
+export const getGetProxmoxSettingsQueryOptions = <TData = Awaited<ReturnType<typeof getProxmoxSettings>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProxmoxSettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetProxmoxSettingsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProxmoxSettings>>> = ({ signal }) => getProxmoxSettings({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProxmoxSettings>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetProxmoxSettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getProxmoxSettings>>>
+export type GetProxmoxSettingsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get Proxmox integration settings (admin)
+ */
+
+export function useGetProxmoxSettings<TData = Awaited<ReturnType<typeof getProxmoxSettings>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProxmoxSettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetProxmoxSettingsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getUpdateProxmoxSettingsUrl = () => {
+
+
+
+
+  return `/api/admin/settings/proxmox`
+}
+
+/**
+ * @summary Update Proxmox integration settings (admin)
+ */
+export const updateProxmoxSettings = async (provisionSettingsInput: ProvisionSettingsInput, options?: RequestInit): Promise<ProvisionSettings> => {
+
+  return customFetch<ProvisionSettings>(getUpdateProxmoxSettingsUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      provisionSettingsInput,)
+  }
+);}
+
+
+
+
+export const getUpdateProxmoxSettingsMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateProxmoxSettings>>, TError,{data: BodyType<ProvisionSettingsInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateProxmoxSettings>>, TError,{data: BodyType<ProvisionSettingsInput>}, TContext> => {
+
+const mutationKey = ['updateProxmoxSettings'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateProxmoxSettings>>, {data: BodyType<ProvisionSettingsInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  updateProxmoxSettings(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateProxmoxSettingsMutationResult = NonNullable<Awaited<ReturnType<typeof updateProxmoxSettings>>>
+    export type UpdateProxmoxSettingsMutationBody = BodyType<ProvisionSettingsInput>
+    export type UpdateProxmoxSettingsMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update Proxmox integration settings (admin)
+ */
+export const useUpdateProxmoxSettings = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateProxmoxSettings>>, TError,{data: BodyType<ProvisionSettingsInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateProxmoxSettings>>,
+        TError,
+        {data: BodyType<ProvisionSettingsInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateProxmoxSettingsMutationOptions(options));
+    }
+
+export const getGetPterodactylNodesUrl = () => {
+
+
+
+
+  return `/api/admin/pterodactyl/nodes`
+}
+
+/**
+ * @summary List Pterodactyl nodes (admin)
+ */
+export const getPterodactylNodes = async ( options?: RequestInit): Promise<PterodactylNode[]> => {
+
+  return customFetch<PterodactylNode[]>(getGetPterodactylNodesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPterodactylNodesQueryKey = () => {
+    return [
+    `/api/admin/pterodactyl/nodes`
+    ] as const;
+    }
+
+
+export const getGetPterodactylNodesQueryOptions = <TData = Awaited<ReturnType<typeof getPterodactylNodes>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPterodactylNodes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPterodactylNodesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPterodactylNodes>>> = ({ signal }) => getPterodactylNodes({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPterodactylNodes>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPterodactylNodesQueryResult = NonNullable<Awaited<ReturnType<typeof getPterodactylNodes>>>
+export type GetPterodactylNodesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List Pterodactyl nodes (admin)
+ */
+
+export function useGetPterodactylNodes<TData = Awaited<ReturnType<typeof getPterodactylNodes>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPterodactylNodes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPterodactylNodesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetPterodactylEggsUrl = () => {
+
+
+
+
+  return `/api/admin/pterodactyl/eggs`
+}
+
+/**
+ * @summary List Pterodactyl eggs (admin)
+ */
+export const getPterodactylEggs = async ( options?: RequestInit): Promise<PterodactylEgg[]> => {
+
+  return customFetch<PterodactylEgg[]>(getGetPterodactylEggsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPterodactylEggsQueryKey = () => {
+    return [
+    `/api/admin/pterodactyl/eggs`
+    ] as const;
+    }
+
+
+export const getGetPterodactylEggsQueryOptions = <TData = Awaited<ReturnType<typeof getPterodactylEggs>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPterodactylEggs>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPterodactylEggsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPterodactylEggs>>> = ({ signal }) => getPterodactylEggs({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPterodactylEggs>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPterodactylEggsQueryResult = NonNullable<Awaited<ReturnType<typeof getPterodactylEggs>>>
+export type GetPterodactylEggsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List Pterodactyl eggs (admin)
+ */
+
+export function useGetPterodactylEggs<TData = Awaited<ReturnType<typeof getPterodactylEggs>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPterodactylEggs>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPterodactylEggsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetPlanMappingsUrl = () => {
+
+
+
+
+  return `/api/admin/plan-mappings`
+}
+
+/**
+ * @summary Get all plan provisioning mappings (admin)
+ */
+export const getPlanMappings = async ( options?: RequestInit): Promise<PlanProvisionMapping[]> => {
+
+  return customFetch<PlanProvisionMapping[]>(getGetPlanMappingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPlanMappingsQueryKey = () => {
+    return [
+    `/api/admin/plan-mappings`
+    ] as const;
+    }
+
+
+export const getGetPlanMappingsQueryOptions = <TData = Awaited<ReturnType<typeof getPlanMappings>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPlanMappings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPlanMappingsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPlanMappings>>> = ({ signal }) => getPlanMappings({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPlanMappings>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPlanMappingsQueryResult = NonNullable<Awaited<ReturnType<typeof getPlanMappings>>>
+export type GetPlanMappingsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get all plan provisioning mappings (admin)
+ */
+
+export function useGetPlanMappings<TData = Awaited<ReturnType<typeof getPlanMappings>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPlanMappings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPlanMappingsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getUpdatePlanMappingUrl = (planId: number,) => {
+
+
+
+
+  return `/api/admin/plan-mappings/${planId}`
+}
+
+/**
+ * @summary Set provisioning mapping for a plan (admin)
+ */
+export const updatePlanMapping = async (planId: number,
+    planProvisionMappingInput: PlanProvisionMappingInput, options?: RequestInit): Promise<PlanProvisionMapping> => {
+
+  return customFetch<PlanProvisionMapping>(getUpdatePlanMappingUrl(planId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      planProvisionMappingInput,)
+  }
+);}
+
+
+
+
+export const getUpdatePlanMappingMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePlanMapping>>, TError,{planId: number;data: BodyType<PlanProvisionMappingInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePlanMapping>>, TError,{planId: number;data: BodyType<PlanProvisionMappingInput>}, TContext> => {
+
+const mutationKey = ['updatePlanMapping'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePlanMapping>>, {planId: number;data: BodyType<PlanProvisionMappingInput>}> = (props) => {
+          const {planId,data} = props ?? {};
+
+          return  updatePlanMapping(planId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePlanMappingMutationResult = NonNullable<Awaited<ReturnType<typeof updatePlanMapping>>>
+    export type UpdatePlanMappingMutationBody = BodyType<PlanProvisionMappingInput>
+    export type UpdatePlanMappingMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Set provisioning mapping for a plan (admin)
+ */
+export const useUpdatePlanMapping = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePlanMapping>>, TError,{planId: number;data: BodyType<PlanProvisionMappingInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePlanMapping>>,
+        TError,
+        {planId: number;data: BodyType<PlanProvisionMappingInput>},
+        TContext
+      > => {
+      return useMutation(getUpdatePlanMappingMutationOptions(options));
+    }
+
+export const getGetProvisionsUrl = () => {
+
+
+
+
+  return `/api/admin/provisions`
+}
+
+/**
+ * @summary List all provisioned servers (admin)
+ */
+export const getProvisions = async ( options?: RequestInit): Promise<ProvisionDetail[]> => {
+
+  return customFetch<ProvisionDetail[]>(getGetProvisionsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetProvisionsQueryKey = () => {
+    return [
+    `/api/admin/provisions`
+    ] as const;
+    }
+
+
+export const getGetProvisionsQueryOptions = <TData = Awaited<ReturnType<typeof getProvisions>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProvisions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetProvisionsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProvisions>>> = ({ signal }) => getProvisions({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProvisions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetProvisionsQueryResult = NonNullable<Awaited<ReturnType<typeof getProvisions>>>
+export type GetProvisionsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List all provisioned servers (admin)
+ */
+
+export function useGetProvisions<TData = Awaited<ReturnType<typeof getProvisions>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProvisions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetProvisionsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getServerActionUrl = (serviceId: number,) => {
+
+
+
+
+  return `/api/admin/provisions/${serviceId}/action`
+}
+
+/**
+ * @summary Perform action on a provisioned server (admin)
+ */
+export const serverAction = async (serviceId: number,
+    serverActionInput: ServerActionInput, options?: RequestInit): Promise<MessageResponse> => {
+
+  return customFetch<MessageResponse>(getServerActionUrl(serviceId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      serverActionInput,)
+  }
+);}
+
+
+
+
+export const getServerActionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serverAction>>, TError,{serviceId: number;data: BodyType<ServerActionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof serverAction>>, TError,{serviceId: number;data: BodyType<ServerActionInput>}, TContext> => {
+
+const mutationKey = ['serverAction'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof serverAction>>, {serviceId: number;data: BodyType<ServerActionInput>}> = (props) => {
+          const {serviceId,data} = props ?? {};
+
+          return  serverAction(serviceId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ServerActionMutationResult = NonNullable<Awaited<ReturnType<typeof serverAction>>>
+    export type ServerActionMutationBody = BodyType<ServerActionInput>
+    export type ServerActionMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Perform action on a provisioned server (admin)
+ */
+export const useServerAction = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serverAction>>, TError,{serviceId: number;data: BodyType<ServerActionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof serverAction>>,
+        TError,
+        {serviceId: number;data: BodyType<ServerActionInput>},
+        TContext
+      > => {
+      return useMutation(getServerActionMutationOptions(options));
+    }
+
+export const getGetProvisionStatusUrl = (id: number,) => {
+
+
+
+
+  return `/api/services/${id}/provision-status`
+}
+
+/**
+ * @summary Get real-time provision status for a service
+ */
+export const getProvisionStatus = async (id: number, options?: RequestInit): Promise<ProvisionStatus> => {
+
+  return customFetch<ProvisionStatus>(getGetProvisionStatusUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetProvisionStatusQueryKey = (id: number,) => {
+    return [
+    `/api/services/${id}/provision-status`
+    ] as const;
+    }
+
+
+export const getGetProvisionStatusQueryOptions = <TData = Awaited<ReturnType<typeof getProvisionStatus>>, TError = ErrorType<unknown>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProvisionStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetProvisionStatusQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProvisionStatus>>> = ({ signal }) => getProvisionStatus(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProvisionStatus>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetProvisionStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getProvisionStatus>>>
+export type GetProvisionStatusQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get real-time provision status for a service
+ */
+
+export function useGetProvisionStatus<TData = Awaited<ReturnType<typeof getProvisionStatus>>, TError = ErrorType<unknown>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProvisionStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetProvisionStatusQueryOptions(id,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

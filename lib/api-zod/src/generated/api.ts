@@ -578,6 +578,223 @@ export const AdminGetServicesResponse = zod.array(AdminGetServicesResponseItem)
 
 
 /**
+ * @summary Get Pterodactyl integration settings (admin)
+ */
+export const GetPterodactylSettingsResponse = zod.object({
+  "id": zod.number().optional(),
+  "provider": zod.string(),
+  "apiUrl": zod.string().nullish(),
+  "apiKey": zod.string().nullish(),
+  "apiKeyApp": zod.string().nullish(),
+  "username": zod.string().nullish(),
+  "defaultNodeId": zod.string().nullish(),
+  "defaultEggId": zod.string().nullish(),
+  "isEnabled": zod.boolean(),
+  "updatedAt": zod.coerce.date().optional()
+})
+
+
+/**
+ * @summary Update Pterodactyl integration settings (admin)
+ */
+export const UpdatePterodactylSettingsBody = zod.object({
+  "apiUrl": zod.string().optional(),
+  "apiKey": zod.string().optional(),
+  "apiKeyApp": zod.string().optional(),
+  "username": zod.string().optional(),
+  "password": zod.string().optional(),
+  "defaultNodeId": zod.string().optional(),
+  "defaultEggId": zod.string().optional(),
+  "isEnabled": zod.boolean().optional()
+})
+
+export const UpdatePterodactylSettingsResponse = zod.object({
+  "id": zod.number().optional(),
+  "provider": zod.string(),
+  "apiUrl": zod.string().nullish(),
+  "apiKey": zod.string().nullish(),
+  "apiKeyApp": zod.string().nullish(),
+  "username": zod.string().nullish(),
+  "defaultNodeId": zod.string().nullish(),
+  "defaultEggId": zod.string().nullish(),
+  "isEnabled": zod.boolean(),
+  "updatedAt": zod.coerce.date().optional()
+})
+
+
+/**
+ * @summary Get Proxmox integration settings (admin)
+ */
+export const GetProxmoxSettingsResponse = zod.object({
+  "id": zod.number().optional(),
+  "provider": zod.string(),
+  "apiUrl": zod.string().nullish(),
+  "apiKey": zod.string().nullish(),
+  "apiKeyApp": zod.string().nullish(),
+  "username": zod.string().nullish(),
+  "defaultNodeId": zod.string().nullish(),
+  "defaultEggId": zod.string().nullish(),
+  "isEnabled": zod.boolean(),
+  "updatedAt": zod.coerce.date().optional()
+})
+
+
+/**
+ * @summary Update Proxmox integration settings (admin)
+ */
+export const UpdateProxmoxSettingsBody = zod.object({
+  "apiUrl": zod.string().optional(),
+  "apiKey": zod.string().optional(),
+  "apiKeyApp": zod.string().optional(),
+  "username": zod.string().optional(),
+  "password": zod.string().optional(),
+  "defaultNodeId": zod.string().optional(),
+  "defaultEggId": zod.string().optional(),
+  "isEnabled": zod.boolean().optional()
+})
+
+export const UpdateProxmoxSettingsResponse = zod.object({
+  "id": zod.number().optional(),
+  "provider": zod.string(),
+  "apiUrl": zod.string().nullish(),
+  "apiKey": zod.string().nullish(),
+  "apiKeyApp": zod.string().nullish(),
+  "username": zod.string().nullish(),
+  "defaultNodeId": zod.string().nullish(),
+  "defaultEggId": zod.string().nullish(),
+  "isEnabled": zod.boolean(),
+  "updatedAt": zod.coerce.date().optional()
+})
+
+
+/**
+ * @summary List Pterodactyl nodes (admin)
+ */
+export const GetPterodactylNodesResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "fqdn": zod.string(),
+  "memory": zod.number(),
+  "disk": zod.number(),
+  "allocations": zod.number().optional()
+})
+export const GetPterodactylNodesResponse = zod.array(GetPterodactylNodesResponseItem)
+
+
+/**
+ * @summary List Pterodactyl eggs (admin)
+ */
+export const GetPterodactylEggsResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string().nullish()
+})
+export const GetPterodactylEggsResponse = zod.array(GetPterodactylEggsResponseItem)
+
+
+/**
+ * @summary Get all plan provisioning mappings (admin)
+ */
+export const GetPlanMappingsResponseItem = zod.object({
+  "id": zod.number().optional(),
+  "planId": zod.number(),
+  "provider": zod.string(),
+  "nodeId": zod.string().nullish(),
+  "eggId": zod.string().nullish(),
+  "vmType": zod.string().nullish(),
+  "cpuCores": zod.number().nullish(),
+  "memoryMb": zod.number().nullish(),
+  "diskGb": zod.number().nullish()
+})
+export const GetPlanMappingsResponse = zod.array(GetPlanMappingsResponseItem)
+
+
+/**
+ * @summary Set provisioning mapping for a plan (admin)
+ */
+export const UpdatePlanMappingParams = zod.object({
+  "planId": zod.coerce.number()
+})
+
+export const UpdatePlanMappingBody = zod.object({
+  "provider": zod.string(),
+  "nodeId": zod.string().optional(),
+  "eggId": zod.string().optional(),
+  "vmType": zod.string().optional(),
+  "cpuCores": zod.number().optional(),
+  "memoryMb": zod.number().optional(),
+  "diskGb": zod.number().optional()
+})
+
+export const UpdatePlanMappingResponse = zod.object({
+  "id": zod.number().optional(),
+  "planId": zod.number(),
+  "provider": zod.string(),
+  "nodeId": zod.string().nullish(),
+  "eggId": zod.string().nullish(),
+  "vmType": zod.string().nullish(),
+  "cpuCores": zod.number().nullish(),
+  "memoryMb": zod.number().nullish(),
+  "diskGb": zod.number().nullish()
+})
+
+
+/**
+ * @summary List all provisioned servers (admin)
+ */
+export const GetProvisionsResponseItem = zod.object({
+  "serviceId": zod.number(),
+  "userId": zod.number(),
+  "planName": zod.string(),
+  "category": zod.string(),
+  "provisionType": zod.string().nullable(),
+  "provisionStatus": zod.string(),
+  "externalId": zod.string().nullish(),
+  "externalServerId": zod.string().nullish(),
+  "serverIp": zod.string().nullish(),
+  "hostname": zod.string().nullish(),
+  "consoleUrl": zod.string().nullish(),
+  "nodeId": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})
+export const GetProvisionsResponse = zod.array(GetProvisionsResponseItem)
+
+
+/**
+ * @summary Perform action on a provisioned server (admin)
+ */
+export const ServerActionParams = zod.object({
+  "serviceId": zod.coerce.number()
+})
+
+export const ServerActionBody = zod.object({
+  "action": zod.enum(['start', 'stop', 'restart', 'kill', 'reinstall', 'delete', 'suspend', 'unsuspend'])
+})
+
+export const ServerActionResponse = zod.object({
+  "message": zod.string()
+})
+
+
+/**
+ * @summary Get real-time provision status for a service
+ */
+export const GetProvisionStatusParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetProvisionStatusResponse = zod.object({
+  "serviceId": zod.number(),
+  "provisionStatus": zod.string(),
+  "status": zod.string(),
+  "serverIp": zod.string().nullish(),
+  "hostname": zod.string().nullish(),
+  "consoleUrl": zod.string().nullish(),
+  "externalId": zod.string().nullish()
+})
+
+
+/**
  * @summary Get homepage statistics (customers, servers, uptime, support)
  */
 export const GetPublicStatsResponse = zod.object({

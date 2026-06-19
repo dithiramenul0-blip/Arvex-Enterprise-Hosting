@@ -3,6 +3,7 @@ import { db, ordersTable, plansTable, servicesTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { authenticate, type AuthRequest } from "../middlewares/authenticate.js";
 import { CreateOrderBody } from "@workspace/api-zod";
+import { autoProvisionService } from "../lib/provisioner.js";
 
 const router = Router();
 
@@ -13,10 +14,11 @@ router.get("/", authenticate, async (req: AuthRequest, res) => {
     : await db.select().from(ordersTable).where(eq(ordersTable.userId, req.userId!));
 
   const planIds = [...new Set(rawOrders.map(o => o.planId))];
-  const plans = planIds.length > 0
-    ? await db.select().from(plansTable).where(eq(plansTable.id, planIds[0]))
-    : [];
-  const planMap = new Map(plans.map(p => [p.id, p.name]));
+  let planMap = new Map<number, string>();
+  for (const pid of planIds) {
+    const [p] = await db.select().from(plansTable).where(eq(plansTable.id, pid)).limit(1);
+    if (p) planMap.set(p.id, p.name);
+  }
 
   res.json(rawOrders.map(o => ({
     ...o,
@@ -43,16 +45,23 @@ router.post("/", authenticate, async (req: AuthRequest, res) => {
 
   const expiresAt = new Date();
   expiresAt.setMonth(expiresAt.getMonth() + 1);
-  await db.insert(servicesTable).values({
+  const [service] = await db.insert(servicesTable).values({
     userId: req.userId!,
     planId,
     status: "active",
-    serverIp: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
-    hostname: `srv-${Date.now()}.arvexhosting.com`,
+    provisionStatus: "pending",
     expiresAt,
+  }).returning();
+
+  setImmediate(() => {
+    autoProvisionService(service.id).catch(() => {});
   });
 
-  res.status(201).json({ ...order, totalPrice: parseFloat(order.totalPrice as unknown as string), planName: plan.name });
+  res.status(201).json({
+    ...order,
+    totalPrice: parseFloat(order.totalPrice as unknown as string),
+    planName: plan.name,
+  });
 });
 
 router.get("/:id", authenticate, async (req: AuthRequest, res) => {

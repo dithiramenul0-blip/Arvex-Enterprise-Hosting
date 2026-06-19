@@ -151,11 +151,29 @@
 }
 
 .glow-text {
-  text-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+  text-shadow: 0 0 20px rgba(139,0,0,0.8), 0 0 40px rgba(139,0,0,0.4);
 }
 
-.glow-border {
-  box-shadow: 0 0 20px rgba(139, 0, 0, 0.2);
+.btn-glow {
+  box-shadow: 0 0 15px rgba(139,0,0,0.5), 0 0 30px rgba(139,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.border-glow {
+  border: 1px solid rgba(139,0,0,0.5);
+  box-shadow: 0 0 10px rgba(139,0,0,0.3), inset 0 0 10px rgba(139,0,0,0.05);
+}
+
+.scanline {
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px);
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(139,0,0,0.3); }
+  50% { box-shadow: 0 0 20px rgba(139,0,0,0.8); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite;
 }
 
 @keyframes float {

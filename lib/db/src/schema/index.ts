@@ -5,3 +5,4 @@ export * from "./services";
 export * from "./tickets";
 export * from "./partners";
 export * from "./content";
+export * from "./provision_settings";

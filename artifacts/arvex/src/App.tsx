@@ -30,6 +30,12 @@ import AdminTickets from "@/pages/admin/Tickets";
 import AdminPartners from "@/pages/admin/Partners";
 import AdminContent from "@/pages/admin/Content";
 
+// New Admin Pages
+import AdminPterodactyl from "@/pages/admin/Pterodactyl";
+import AdminProxmox from "@/pages/admin/Proxmox";
+import AdminPlanMappings from "@/pages/admin/PlanMappings";
+import AdminProvisions from "@/pages/admin/Provisions";
+
 const queryClient = new QueryClient();
 
 function ProtectedRoute({ component: Component, adminOnly = false }: { component: any, adminOnly?: boolean }) {
@@ -102,6 +108,10 @@ function Router() {
               <Route path="/admin/tickets" component={AdminTickets} />
               <Route path="/admin/partners" component={AdminPartners} />
               <Route path="/admin/content" component={AdminContent} />
+              <Route path="/admin/pterodactyl" component={AdminPterodactyl} />
+              <Route path="/admin/proxmox" component={AdminProxmox} />
+              <Route path="/admin/plan-mappings" component={AdminPlanMappings} />
+              <Route path="/admin/provisions" component={AdminProvisions} />
             </Switch>
           </AdminLayout>
         )} />

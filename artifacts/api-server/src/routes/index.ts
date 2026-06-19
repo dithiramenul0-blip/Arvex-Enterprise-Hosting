@@ -10,6 +10,7 @@ import partnersRouter from "./partners.js";
 import contentRouter from "./content.js";
 import adminRouter from "./admin.js";
 import statsRouter from "./stats.js";
+import provisioningRouter from "./provisioning.js";
 
 const router: IRouter = Router();
 
@@ -23,6 +24,7 @@ router.use("/tickets", ticketsRouter);
 router.use("/partners", partnersRouter);
 router.use("/content", contentRouter);
 router.use("/admin", adminRouter);
+router.use("/admin", provisioningRouter);
 router.use("/stats", statsRouter);
 
 export default router;

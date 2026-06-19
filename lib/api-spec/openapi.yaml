@@ -700,6 +700,196 @@ paths:
                 items:
                   $ref: "#/components/schemas/Service"
 
+  # ─── Provisioning Settings ───────────────────────────────────────────
+  /admin/settings/pterodactyl:
+    get:
+      operationId: getPterodactylSettings
+      tags: [admin]
+      summary: Get Pterodactyl integration settings (admin)
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProvisionSettings"
+    put:
+      operationId: updatePterodactylSettings
+      tags: [admin]
+      summary: Update Pterodactyl integration settings (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProvisionSettingsInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProvisionSettings"
+
+  /admin/settings/proxmox:
+    get:
+      operationId: getProxmoxSettings
+      tags: [admin]
+      summary: Get Proxmox integration settings (admin)
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProvisionSettings"
+    put:
+      operationId: updateProxmoxSettings
+      tags: [admin]
+      summary: Update Proxmox integration settings (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProvisionSettingsInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProvisionSettings"
+
+  /admin/pterodactyl/nodes:
+    get:
+      operationId: getPterodactylNodes
+      tags: [admin]
+      summary: List Pterodactyl nodes (admin)
+      responses:
+        "200":
+          description: Nodes list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PterodactylNode"
+
+  /admin/pterodactyl/eggs:
+    get:
+      operationId: getPterodactylEggs
+      tags: [admin]
+      summary: List Pterodactyl eggs (admin)
+      responses:
+        "200":
+          description: Eggs list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PterodactylEgg"
+
+  /admin/plan-mappings:
+    get:
+      operationId: getPlanMappings
+      tags: [admin]
+      summary: Get all plan provisioning mappings (admin)
+      responses:
+        "200":
+          description: Mappings list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlanProvisionMapping"
+
+  /admin/plan-mappings/{planId}:
+    put:
+      operationId: updatePlanMapping
+      tags: [admin]
+      summary: Set provisioning mapping for a plan (admin)
+      parameters:
+        - in: path
+          name: planId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlanProvisionMappingInput"
+      responses:
+        "200":
+          description: Mapping updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanProvisionMapping"
+
+  /admin/provisions:
+    get:
+      operationId: getProvisions
+      tags: [admin]
+      summary: List all provisioned servers (admin)
+      responses:
+        "200":
+          description: Provisions list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProvisionDetail"
+
+  /admin/provisions/{serviceId}/action:
+    post:
+      operationId: serverAction
+      tags: [admin]
+      summary: Perform action on a provisioned server (admin)
+      parameters:
+        - in: path
+          name: serviceId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServerActionInput"
+      responses:
+        "200":
+          description: Action result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /services/{id}/provision-status:
+    get:
+      operationId: getProvisionStatus
+      tags: [services]
+      summary: Get real-time provision status for a service
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Provision status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProvisionStatus"
+
   # ─── Stats ────────────────────────────────────────────────────────────
   /stats/public:
     get:
@@ -1180,3 +1370,179 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Order"
+
+    # Provisioning
+    ProvisionSettings:
+      type: object
+      required: [provider, isEnabled]
+      properties:
+        id:
+          type: integer
+        provider:
+          type: string
+        apiUrl:
+          type: ["string", "null"]
+        apiKey:
+          type: ["string", "null"]
+        apiKeyApp:
+          type: ["string", "null"]
+        username:
+          type: ["string", "null"]
+        defaultNodeId:
+          type: ["string", "null"]
+        defaultEggId:
+          type: ["string", "null"]
+        isEnabled:
+          type: boolean
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProvisionSettingsInput:
+      type: object
+      properties:
+        apiUrl:
+          type: string
+        apiKey:
+          type: string
+        apiKeyApp:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        defaultNodeId:
+          type: string
+        defaultEggId:
+          type: string
+        isEnabled:
+          type: boolean
+
+    PterodactylNode:
+      type: object
+      required: [id, name, fqdn, memory, disk]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        fqdn:
+          type: string
+        memory:
+          type: integer
+        disk:
+          type: integer
+        allocations:
+          type: integer
+
+    PterodactylEgg:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+
+    PlanProvisionMapping:
+      type: object
+      required: [planId, provider]
+      properties:
+        id:
+          type: integer
+        planId:
+          type: integer
+        provider:
+          type: string
+        nodeId:
+          type: ["string", "null"]
+        eggId:
+          type: ["string", "null"]
+        vmType:
+          type: ["string", "null"]
+        cpuCores:
+          type: ["integer", "null"]
+        memoryMb:
+          type: ["integer", "null"]
+        diskGb:
+          type: ["integer", "null"]
+
+    PlanProvisionMappingInput:
+      type: object
+      required: [provider]
+      properties:
+        provider:
+          type: string
+        nodeId:
+          type: string
+        eggId:
+          type: string
+        vmType:
+          type: string
+        cpuCores:
+          type: integer
+        memoryMb:
+          type: integer
+        diskGb:
+          type: integer
+
+    ProvisionDetail:
+      type: object
+      required: [serviceId, userId, planName, category, provisionType, provisionStatus, createdAt]
+      properties:
+        serviceId:
+          type: integer
+        userId:
+          type: integer
+        planName:
+          type: string
+        category:
+          type: string
+        provisionType:
+          type: ["string", "null"]
+        provisionStatus:
+          type: string
+        externalId:
+          type: ["string", "null"]
+        externalServerId:
+          type: ["string", "null"]
+        serverIp:
+          type: ["string", "null"]
+        hostname:
+          type: ["string", "null"]
+        consoleUrl:
+          type: ["string", "null"]
+        nodeId:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    ServerActionInput:
+      type: object
+      required: [action]
+      properties:
+        action:
+          type: string
+          enum: [start, stop, restart, kill, reinstall, delete, suspend, unsuspend]
+
+    ProvisionStatus:
+      type: object
+      required: [serviceId, provisionStatus, status]
+      properties:
+        serviceId:
+          type: integer
+        provisionStatus:
+          type: string
+        status:
+          type: string
+        serverIp:
+          type: ["string", "null"]
+        hostname:
+          type: ["string", "null"]
+        consoleUrl:
+          type: ["string", "null"]
+        externalId:
+          type: ["string", "null"]

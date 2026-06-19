@@ -39,4 +39,21 @@ router.post("/:id/unsuspend", authenticate, requireAdmin, async (req: AuthReques
   res.json({ message: "Service unsuspended" });
 });
 
+router.get("/:id/provision-status", authenticate, async (req: AuthRequest, res) => {
+  const id = parseInt(req.params.id);
+  const [svc] = await db.select().from(servicesTable).where(eq(servicesTable.id, id)).limit(1);
+  if (!svc || (svc.userId !== req.userId && req.userRole !== "admin")) {
+    res.status(404).json({ error: "Service not found" }); return;
+  }
+  res.json({
+    serviceId: svc.id,
+    provisionStatus: svc.provisionStatus,
+    status: svc.status,
+    serverIp: svc.serverIp,
+    hostname: svc.hostname,
+    consoleUrl: svc.consoleUrl,
+    externalId: svc.externalId,
+  });
+});
+
 export default router;

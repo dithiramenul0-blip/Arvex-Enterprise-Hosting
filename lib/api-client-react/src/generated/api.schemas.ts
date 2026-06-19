@@ -368,6 +368,135 @@ export interface AdminStats {
   recentOrders?: Order[];
 }
 
+export interface ProvisionSettings {
+  id?: number;
+  provider: string;
+  /** @nullable */
+  apiUrl?: string | null;
+  /** @nullable */
+  apiKey?: string | null;
+  /** @nullable */
+  apiKeyApp?: string | null;
+  /** @nullable */
+  username?: string | null;
+  /** @nullable */
+  defaultNodeId?: string | null;
+  /** @nullable */
+  defaultEggId?: string | null;
+  isEnabled: boolean;
+  updatedAt?: string;
+}
+
+export interface ProvisionSettingsInput {
+  apiUrl?: string;
+  apiKey?: string;
+  apiKeyApp?: string;
+  username?: string;
+  password?: string;
+  defaultNodeId?: string;
+  defaultEggId?: string;
+  isEnabled?: boolean;
+}
+
+export interface PterodactylNode {
+  id: number;
+  name: string;
+  fqdn: string;
+  memory: number;
+  disk: number;
+  allocations?: number;
+}
+
+export interface PterodactylEgg {
+  id: number;
+  name: string;
+  /** @nullable */
+  description?: string | null;
+}
+
+export interface PlanProvisionMapping {
+  id?: number;
+  planId: number;
+  provider: string;
+  /** @nullable */
+  nodeId?: string | null;
+  /** @nullable */
+  eggId?: string | null;
+  /** @nullable */
+  vmType?: string | null;
+  /** @nullable */
+  cpuCores?: number | null;
+  /** @nullable */
+  memoryMb?: number | null;
+  /** @nullable */
+  diskGb?: number | null;
+}
+
+export interface PlanProvisionMappingInput {
+  provider: string;
+  nodeId?: string;
+  eggId?: string;
+  vmType?: string;
+  cpuCores?: number;
+  memoryMb?: number;
+  diskGb?: number;
+}
+
+export interface ProvisionDetail {
+  serviceId: number;
+  userId: number;
+  planName: string;
+  category: string;
+  /** @nullable */
+  provisionType: string | null;
+  provisionStatus: string;
+  /** @nullable */
+  externalId?: string | null;
+  /** @nullable */
+  externalServerId?: string | null;
+  /** @nullable */
+  serverIp?: string | null;
+  /** @nullable */
+  hostname?: string | null;
+  /** @nullable */
+  consoleUrl?: string | null;
+  /** @nullable */
+  nodeId?: string | null;
+  createdAt: string;
+}
+
+export type ServerActionInputAction = typeof ServerActionInputAction[keyof typeof ServerActionInputAction];
+
+
+export const ServerActionInputAction = {
+  start: 'start',
+  stop: 'stop',
+  restart: 'restart',
+  kill: 'kill',
+  reinstall: 'reinstall',
+  delete: 'delete',
+  suspend: 'suspend',
+  unsuspend: 'unsuspend',
+} as const;
+
+export interface ServerActionInput {
+  action: ServerActionInputAction;
+}
+
+export interface ProvisionStatus {
+  serviceId: number;
+  provisionStatus: string;
+  status: string;
+  /** @nullable */
+  serverIp?: string | null;
+  /** @nullable */
+  hostname?: string | null;
+  /** @nullable */
+  consoleUrl?: string | null;
+  /** @nullable */
+  externalId?: string | null;
+}
+
 export type GetPlansParams = {
 /**
  * Filter by category (vps, minecraft, bot, vds, web)
