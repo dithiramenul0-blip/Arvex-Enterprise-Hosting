@@ -21,7 +21,7 @@ export default function Login() {
       onSuccess: (data) => {
         setAuthToken(data.token);
         toast({ title: "Welcome back", description: "Login successful." });
-        setLocation("/client");
+        setLocation(data.user.role === "admin" ? "/admin" : "/client");
       },
       onError: (error: any) => {
         toast({ 

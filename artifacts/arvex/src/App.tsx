@@ -79,7 +79,7 @@ function Router() {
       <Route path="/sla">{() => <ContentPage slug="sla" />}</Route>
       <Route path="/aup">{() => <ContentPage slug="aup" />}</Route>
 
-      <Route path="/client/*">
+      <Route path="/client/:rest*">
         <ProtectedRoute component={() => (
           <ClientLayout>
             <Switch>
@@ -95,7 +95,7 @@ function Router() {
         )} />
       </Route>
 
-      <Route path="/admin/*">
+      <Route path="/admin/:rest*">
         <ProtectedRoute adminOnly component={() => (
           <AdminLayout>
             <Switch>
