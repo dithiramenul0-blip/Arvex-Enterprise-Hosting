@@ -37,16 +37,18 @@ app.use("/api", router);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const frontendDist = path.resolve(__dirname, "../../arvex/dist/public");
 
+logger.info({ frontendDist, exists: existsSync(frontendDist) }, "Frontend dist path");
+
 if (existsSync(frontendDist)) {
   app.use(express.static(frontendDist));
-  app.get("*", (_req, res) => {
+  app.get("/{*splat}", (_req, res) => {
     const indexPath = path.join(frontendDist, "index.html");
     const stream = createReadStream(indexPath);
     stream.pipe(res);
   });
 } else {
-  app.get("/", (_req, res) => {
-    res.json({ status: "ArveX API running. Frontend not built yet." });
+  app.get("/{*splat}", (_req, res) => {
+    res.status(503).json({ error: "Frontend not built. Run: pnpm --filter @workspace/arvex run build", path: frontendDist });
   });
 }
 
