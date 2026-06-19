@@ -1,22 +1,41 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: ArveX Hosting API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: users
+    description: User management
+  - name: plans
+    description: Hosting plans
+  - name: orders
+    description: Order management
+  - name: services
+    description: Active services
+  - name: tickets
+    description: Support tickets
+  - name: partners
+    description: Partner logos
+  - name: content
+    description: CMS content pages
+  - name: admin
+    description: Admin operations
+  - name: stats
+    description: Statistics and dashboard
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +43,691 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ─── Auth ────────────────────────────────────────────────────────────
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current authenticated user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/forgot-password:
+    post:
+      operationId: forgotPassword
+      tags: [auth]
+      summary: Request password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordInput"
+      responses:
+        "200":
+          description: Reset email sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/reset-password:
+    post:
+      operationId: resetPassword
+      tags: [auth]
+      summary: Reset password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordInput"
+      responses:
+        "200":
+          description: Password reset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # ─── Users ────────────────────────────────────────────────────────────
+  /users/profile:
+    patch:
+      operationId: updateProfile
+      tags: [users]
+      summary: Update own profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/change-password:
+    post:
+      operationId: changePassword
+      tags: [users]
+      summary: Change own password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordInput"
+      responses:
+        "200":
+          description: Changed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # ─── Plans ────────────────────────────────────────────────────────────
+  /plans:
+    get:
+      operationId: getPlans
+      tags: [plans]
+      summary: List all hosting plans
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: Filter by category (vps, minecraft, bot, vds, web)
+      responses:
+        "200":
+          description: Plans list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Plan"
+
+    post:
+      operationId: createPlan
+      tags: [plans]
+      summary: Create a plan (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlanInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Plan"
+
+  /plans/{id}:
+    get:
+      operationId: getPlan
+      tags: [plans]
+      summary: Get a single plan
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Plan"
+
+    patch:
+      operationId: updatePlan
+      tags: [plans]
+      summary: Update a plan (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlanUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Plan"
+
+    delete:
+      operationId: deletePlan
+      tags: [plans]
+      summary: Delete a plan (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # ─── Orders ────────────────────────────────────────────────────────────
+  /orders:
+    get:
+      operationId: getOrders
+      tags: [orders]
+      summary: List orders for current user (or all for admin)
+      responses:
+        "200":
+          description: Orders list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Place an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      summary: Get a single order
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  # ─── Services ────────────────────────────────────────────────────────────
+  /services:
+    get:
+      operationId: getServices
+      tags: [services]
+      summary: List active services for current user
+      responses:
+        "200":
+          description: Services list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+
+  /services/{id}:
+    get:
+      operationId: getService
+      tags: [services]
+      summary: Get a single service
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Service
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+
+  /services/{id}/suspend:
+    post:
+      operationId: suspendService
+      tags: [services]
+      summary: Suspend a service (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Suspended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /services/{id}/unsuspend:
+    post:
+      operationId: unsuspendService
+      tags: [services]
+      summary: Unsuspend a service (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Unsuspended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # ─── Tickets ────────────────────────────────────────────────────────────
+  /tickets:
+    get:
+      operationId: getTickets
+      tags: [tickets]
+      summary: List tickets for current user (or all for admin)
+      responses:
+        "200":
+          description: Tickets list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ticket"
+
+    post:
+      operationId: createTicket
+      tags: [tickets]
+      summary: Open a support ticket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TicketInput"
+      responses:
+        "201":
+          description: Ticket opened
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ticket"
+
+  /tickets/{id}:
+    get:
+      operationId: getTicket
+      tags: [tickets]
+      summary: Get a ticket with replies
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Ticket
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TicketDetail"
+
+  /tickets/{id}/reply:
+    post:
+      operationId: replyTicket
+      tags: [tickets]
+      summary: Reply to a ticket
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TicketReplyInput"
+      responses:
+        "201":
+          description: Reply added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TicketReply"
+
+  /tickets/{id}/close:
+    post:
+      operationId: closeTicket
+      tags: [tickets]
+      summary: Close a ticket
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Closed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # ─── Partners ────────────────────────────────────────────────────────────
+  /partners:
+    get:
+      operationId: getPartners
+      tags: [partners]
+      summary: List all partners
+      responses:
+        "200":
+          description: Partners list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Partner"
+
+    post:
+      operationId: createPartner
+      tags: [partners]
+      summary: Add a partner (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PartnerInput"
+      responses:
+        "201":
+          description: Partner added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Partner"
+
+  /partners/{id}:
+    delete:
+      operationId: deletePartner
+      tags: [partners]
+      summary: Remove a partner (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # ─── Content ────────────────────────────────────────────────────────────
+  /content/{slug}:
+    get:
+      operationId: getContent
+      tags: [content]
+      summary: Get a content page by slug
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Content page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContentPage"
+
+    put:
+      operationId: updateContent
+      tags: [content]
+      summary: Update a content page (admin)
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContentPageInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContentPage"
+
+  # ─── Admin ────────────────────────────────────────────────────────────
+  /admin/users:
+    get:
+      operationId: adminGetUsers
+      tags: [admin]
+      summary: List all users (admin)
+      responses:
+        "200":
+          description: Users list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+  /admin/users/{id}:
+    patch:
+      operationId: adminUpdateUser
+      tags: [admin]
+      summary: Update a user (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminUserUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /admin/users/{id}/ban:
+    post:
+      operationId: banUser
+      tags: [admin]
+      summary: Ban a user (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Banned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /admin/services:
+    get:
+      operationId: adminGetServices
+      tags: [admin]
+      summary: List all services (admin)
+      responses:
+        "200":
+          description: Services list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+
+  # ─── Stats ────────────────────────────────────────────────────────────
+  /stats/public:
+    get:
+      operationId: getPublicStats
+      tags: [stats]
+      summary: Get homepage statistics (customers, servers, uptime, support)
+      responses:
+        "200":
+          description: Public stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicStats"
+
+  /stats/admin:
+    get:
+      operationId: getAdminStats
+      tags: [stats]
+      summary: Get admin dashboard statistics
+      responses:
+        "200":
+          description: Admin stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+# ─── Components ────────────────────────────────────────────────────────────
 components:
   schemas:
     HealthStatus:
@@ -31,6 +735,448 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+
+    # Auth
+    RegisterInput:
+      type: object
+      required: [email, password, firstName, lastName]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        firstName:
+          type: string
+        lastName:
+          type: string
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    ForgotPasswordInput:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+
+    ResetPasswordInput:
+      type: object
+      required: [token, password]
+      properties:
+        token:
+          type: string
+        password:
+          type: string
+          minLength: 8
+
+    ChangePasswordInput:
+      type: object
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+
+    AuthResult:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      required: [id, email, firstName, lastName, role, status, createdAt]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        role:
+          type: string
+          enum: [user, admin]
+        status:
+          type: string
+          enum: [active, suspended, banned]
+        createdAt:
+          type: string
+          format: date-time
+
+    ProfileUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+
+    AdminUserUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        role:
+          type: string
+          enum: [user, admin]
+        status:
+          type: string
+          enum: [active, suspended, banned]
+
+    # Plans
+    Plan:
+      type: object
+      required: [id, name, category, price, billingCycle, features, isActive]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+          enum: [vps, minecraft, bot, vds, web]
+        price:
+          type: number
+        billingCycle:
+          type: string
+          enum: [monthly, quarterly, annually]
+        features:
+          type: array
+          items:
+            type: string
+        cpu:
+          type: ["string", "null"]
+        ram:
+          type: ["string", "null"]
+        storage:
+          type: ["string", "null"]
+        bandwidth:
+          type: ["string", "null"]
+        isActive:
+          type: boolean
+        isFeatured:
+          type: boolean
+
+    PlanInput:
+      type: object
+      required: [name, category, price, billingCycle, features]
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+        billingCycle:
+          type: string
+        features:
+          type: array
+          items:
+            type: string
+        cpu:
+          type: string
+        ram:
+          type: string
+        storage:
+          type: string
+        bandwidth:
+          type: string
+        isActive:
+          type: boolean
+        isFeatured:
+          type: boolean
+
+    PlanUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        features:
+          type: array
+          items:
+            type: string
+        isActive:
+          type: boolean
+        isFeatured:
+          type: boolean
+
+    # Orders
+    Order:
+      type: object
+      required: [id, userId, planId, status, totalPrice, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        planId:
+          type: integer
+        planName:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, active, cancelled, expired]
+        totalPrice:
+          type: number
+        paymentMethod:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    OrderInput:
+      type: object
+      required: [planId, paymentMethod]
+      properties:
+        planId:
+          type: integer
+        paymentMethod:
+          type: string
+          enum: [stripe, paypal, crypto]
+        billingCycle:
+          type: string
+
+    # Services
+    Service:
+      type: object
+      required: [id, userId, planId, status, createdAt, expiresAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        planId:
+          type: integer
+        planName:
+          type: ["string", "null"]
+        category:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [active, suspended, cancelled, expired]
+        serverIp:
+          type: ["string", "null"]
+        hostname:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+
+    # Tickets
+    Ticket:
+      type: object
+      required: [id, userId, subject, department, priority, status, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        subject:
+          type: string
+        department:
+          type: string
+          enum: [billing, sales, technical]
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+        status:
+          type: string
+          enum: [open, in_progress, closed]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TicketInput:
+      type: object
+      required: [subject, department, priority, message]
+      properties:
+        subject:
+          type: string
+        department:
+          type: string
+          enum: [billing, sales, technical]
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+        message:
+          type: string
+
+    TicketDetail:
+      type: object
+      required: [id, userId, subject, department, priority, status, createdAt, replies]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        subject:
+          type: string
+        department:
+          type: string
+        priority:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        replies:
+          type: array
+          items:
+            $ref: "#/components/schemas/TicketReply"
+
+    TicketReply:
+      type: object
+      required: [id, ticketId, userId, message, isStaff, createdAt]
+      properties:
+        id:
+          type: integer
+        ticketId:
+          type: integer
+        userId:
+          type: integer
+        message:
+          type: string
+        isStaff:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    TicketReplyInput:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+
+    # Partners
+    Partner:
+      type: object
+      required: [id, name, logoUrl, sortOrder]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        logoUrl:
+          type: string
+        websiteUrl:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+
+    PartnerInput:
+      type: object
+      required: [name, logoUrl]
+      properties:
+        name:
+          type: string
+        logoUrl:
+          type: string
+        websiteUrl:
+          type: string
+        sortOrder:
+          type: integer
+
+    # Content
+    ContentPage:
+      type: object
+      required: [id, slug, title, content, updatedAt]
+      properties:
+        id:
+          type: integer
+        slug:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+
+    ContentPageInput:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+
+    # Stats
+    PublicStats:
+      type: object
+      required: [activeCustomers, activeServers, uptimePercent, supportAvailability]
+      properties:
+        activeCustomers:
+          type: integer
+        activeServers:
+          type: integer
+        uptimePercent:
+          type: number
+        supportAvailability:
+          type: string
+
+    AdminStats:
+      type: object
+      required: [totalUsers, totalOrders, totalRevenue, activeServices, openTickets]
+      properties:
+        totalUsers:
+          type: integer
+        totalOrders:
+          type: integer
+        totalRevenue:
+          type: number
+        activeServices:
+          type: integer
+        openTickets:
+          type: integer
+        recentOrders:
+          type: array
+          items:
+            $ref: "#/components/schemas/Order"
