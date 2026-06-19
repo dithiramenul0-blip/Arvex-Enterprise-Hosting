@@ -79,27 +79,32 @@ function Router() {
       <Route path="/sla">{() => <ContentPage slug="sla" />}</Route>
       <Route path="/aup">{() => <ContentPage slug="aup" />}</Route>
 
+      <Route path="/client">
+        <ProtectedRoute component={() => <ClientLayout><ClientDashboard /></ClientLayout>} />
+      </Route>
       <Route path="/client/:rest*">
         <ProtectedRoute component={() => (
           <ClientLayout>
             <Switch>
-              <Route path="/client" component={ClientDashboard} />
               <Route path="/client/services" component={ClientServices} />
               <Route path="/client/orders" component={ClientOrders} />
-              <Route path="/client/tickets" component={ClientTickets} />
               <Route path="/client/tickets/new" component={NewTicket} />
               <Route path="/client/tickets/:id">{(params) => <TicketDetail id={params.id!} />}</Route>
+              <Route path="/client/tickets" component={ClientTickets} />
               <Route path="/client/profile" component={ClientProfile} />
+              <Route component={NotFound} />
             </Switch>
           </ClientLayout>
         )} />
       </Route>
 
+      <Route path="/admin">
+        <ProtectedRoute adminOnly component={() => <AdminLayout><AdminDashboard /></AdminLayout>} />
+      </Route>
       <Route path="/admin/:rest*">
         <ProtectedRoute adminOnly component={() => (
           <AdminLayout>
             <Switch>
-              <Route path="/admin" component={AdminDashboard} />
               <Route path="/admin/users" component={AdminUsers} />
               <Route path="/admin/plans" component={AdminPlans} />
               <Route path="/admin/services" component={AdminServices} />
@@ -110,6 +115,7 @@ function Router() {
               <Route path="/admin/proxmox" component={AdminProxmox} />
               <Route path="/admin/plan-mappings" component={AdminPlanMappings} />
               <Route path="/admin/provisions" component={AdminProvisions} />
+              <Route component={NotFound} />
             </Switch>
           </AdminLayout>
         )} />
