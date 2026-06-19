@@ -2,6 +2,7 @@ import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import path from "path";
+import { fileURLToPath } from "url";
 import { createReadStream, existsSync } from "fs";
 import router from "./routes";
 import { logger } from "./lib/logger";
@@ -33,7 +34,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
 
-const frontendDist = path.resolve(import.meta.dirname, "../../arvex/dist/public");
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const frontendDist = path.resolve(__dirname, "../../arvex/dist/public");
 
 if (existsSync(frontendDist)) {
   app.use(express.static(frontendDist));
