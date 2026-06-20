@@ -485,6 +485,29 @@ export interface ProvisionDetail {
   createdAt: string;
 }
 
+export type ChatMessageRole = typeof ChatMessageRole[keyof typeof ChatMessageRole];
+
+
+export const ChatMessageRole = {
+  user: 'user',
+  assistant: 'assistant',
+} as const;
+
+export interface ChatMessage {
+  role: ChatMessageRole;
+  content: string;
+}
+
+export interface ChatInput {
+  message: string;
+  history?: ChatMessage[];
+}
+
+export interface ChatResponse {
+  reply: string;
+  configured?: boolean;
+}
+
 export type ServerActionInputAction = typeof ServerActionInputAction[keyof typeof ServerActionInputAction];
 
 

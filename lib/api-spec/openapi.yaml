@@ -29,6 +29,8 @@ tags:
     description: Admin operations
   - name: stats
     description: Statistics and dashboard
+  - name: chat
+    description: AI support chatbot
 
 paths:
   /healthz:
@@ -1054,6 +1056,32 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  # ─── Chat ─────────────────────────────────────────────────────────────
+  /chat:
+    post:
+      operationId: sendChatMessage
+      tags: [chat]
+      summary: Send a message to the AI support chatbot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatInput"
+      responses:
+        "200":
+          description: AI reply
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   # ─── Stats ────────────────────────────────────────────────────────────
   /stats/public:
     get:
@@ -1717,6 +1745,36 @@ components:
         createdAt:
           type: string
           format: date-time
+
+    ChatMessage:
+      type: object
+      required: [role, content]
+      properties:
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+
+    ChatInput:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChatMessage"
+
+    ChatResponse:
+      type: object
+      required: [reply]
+      properties:
+        reply:
+          type: string
+        configured:
+          type: boolean
 
     ServerActionInput:
       type: object

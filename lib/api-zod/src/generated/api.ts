@@ -883,6 +883,23 @@ export const CapturePaypalOrderResponse = zod.object({
 
 
 /**
+ * @summary Send a message to the AI support chatbot
+ */
+export const SendChatMessageBody = zod.object({
+  "message": zod.string(),
+  "history": zod.array(zod.object({
+  "role": zod.enum(['user', 'assistant']),
+  "content": zod.string()
+})).optional()
+})
+
+export const SendChatMessageResponse = zod.object({
+  "reply": zod.string(),
+  "configured": zod.boolean().optional()
+})
+
+
+/**
  * @summary Get homepage statistics (customers, servers, uptime, support)
  */
 export const GetPublicStatsResponse = zod.object({
