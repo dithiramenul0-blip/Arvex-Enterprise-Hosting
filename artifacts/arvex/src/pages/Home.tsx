@@ -1,7 +1,8 @@
+import React from "react";
 import { Navbar, Footer } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { useGetPublicStats, useGetPartners } from "@workspace/api-client-react";
+import { useGetPublicStats, useGetPartners, useGetPublicSiteSettings } from "@workspace/api-client-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Shield, Zap, Server, Globe, Headset, HardDrive, Cpu, Bot, ArrowRight,
@@ -159,9 +160,15 @@ const COMPARE_FEATURES = [
   { feature: "Custom ISO Support", arvex: true, competitor1: false, competitor2: false },
 ];
 
+function tryParseJson<T>(v: string | undefined, fallback: T): T {
+  if (!v) return fallback;
+  try { return JSON.parse(v) as T; } catch { return fallback; }
+}
+
 export default function Home() {
   const { data: stats } = useGetPublicStats();
   const { data: partners } = useGetPartners();
+  const { data: siteKv } = useGetPublicSiteSettings();
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
@@ -169,9 +176,53 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [locationRegion, setLocationRegion] = useState("All");
 
+  const kv = siteKv as Record<string, string> | undefined;
+
+  const heroBadge = kv?.heroBadge ?? "12 Global Datacenters — Always Online";
+  const heroTitle = kv?.heroTitle ?? "Enterprise Hosting Solutions";
+  const heroSubtitle = kv?.heroSubtitle ?? "High-performance VPS, Minecraft, Bot, VDS, Web, and V2Ray infrastructure built on ultra-fast NVMe arrays. Join over 50,000 players trusting ArveX.";
+  const pricingFrom = kv?.pricingFrom ?? "$1.99";
+  const ctaTitle = kv?.ctaTitle ?? "Ready to Dominate?";
+  const ctaSubtitle = kv?.ctaSubtitle ?? "Deploy your premium infrastructure in seconds and experience the ArveX difference today.";
+
+  type DbService = { key: string; title: string; href: string; desc: string; badge: string };
+  type DbFeature = { title: string; desc: string };
+  type DbLocation = { city: string; country: string; flag: string; region: string; ping: string; nodes: number };
+  type DbTestimonial = { name: string; role: string; text: string; service: string };
+  type DbFaq = { q: string; a: string };
+
+  const dbServices = tryParseJson<DbService[]>(kv?.services, []);
+  const dbFeatures = tryParseJson<DbFeature[]>(kv?.features, []);
+  const dbLocations = tryParseJson<DbLocation[]>(kv?.locations, []);
+  const dbTestimonials = tryParseJson<DbTestimonial[]>(kv?.testimonials, []);
+  const dbFaqs = tryParseJson<DbFaq[]>(kv?.faqs, []);
+
+  const SERVICE_ICON_MAP: Record<string, React.ElementType> = {
+    vps: Server, minecraft: HardDrive, bot: Bot, vds: Cpu, web: Globe, v2ray: Wifi,
+  };
+  const FEATURE_ICON_LIST = [Zap, Shield, Server, BarChart3, Lock, Headset, Network, RefreshCw, Eye, Database, CloudLightning, Terminal];
+
+  const activeServices = dbServices.length > 0
+    ? dbServices.map(s => ({ ...s, icon: SERVICE_ICON_MAP[s.key] ?? Server }))
+    : SERVICES;
+
+  const activeFeatures = dbFeatures.length > 0
+    ? dbFeatures.map((f, i) => ({ ...f, icon: FEATURE_ICON_LIST[i % FEATURE_ICON_LIST.length] }))
+    : FEATURES;
+
+  const activeLocations = dbLocations.length > 0
+    ? dbLocations.map(l => ({ ...l, status: "online" }))
+    : LOCATIONS;
+
+  const activeTestimonials = dbTestimonials.length > 0
+    ? dbTestimonials.map(t => ({ ...t, avatar: t.name.slice(0, 2).toUpperCase(), stars: 5 }))
+    : TESTIMONIALS;
+
+  const activeFaqs = dbFaqs.length > 0 ? dbFaqs : FAQS;
+
   const partnerList = partners ?? [];
   const regions = ["All", "North America", "Europe", "Asia Pacific", "South America"];
-  const filteredLocations = locationRegion === "All" ? LOCATIONS : LOCATIONS.filter(l => l.region === locationRegion);
+  const filteredLocations = locationRegion === "All" ? activeLocations : activeLocations.filter(l => l.region === locationRegion);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -223,8 +274,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.25 }}
                 className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed font-medium"
               >
-                High-performance VPS, Minecraft, Bot, VDS, Web, and V2Ray infrastructure built on ultra-fast NVMe arrays. Join over{" "}
-                <span className="text-primary font-bold">50,000 players</span> trusting ArveX.
+                {heroSubtitle}
               </motion.p>
 
               <motion.div
@@ -314,7 +364,7 @@ export default function Home() {
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-              {SERVICES.map((svc, i) => {
+              {activeServices.map((svc, i) => {
                 const Icon = svc.icon;
                 return (
                   <motion.div
@@ -327,7 +377,7 @@ export default function Home() {
                     <Link href={svc.href} className="block group service-card">
                       <div className="relative rounded-2xl overflow-hidden h-72 border border-white/10 group-hover:border-primary/50 transition-all duration-500 group-hover:shadow-[0_0_40px_rgba(124,58,237,0.25)] group-hover:-translate-y-2">
                         <img
-                          src={SERVICE_IMAGES[svc.key]}
+                          src={SERVICE_IMAGES[svc.key] ?? SERVICE_IMAGES.vps}
                           alt={svc.title}
                           className="service-card-image absolute inset-0 w-full h-full object-cover"
                         />
@@ -383,7 +433,7 @@ export default function Home() {
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {FEATURES.map((feat, i) => {
+              {activeFeatures.map((feat, i) => {
                 const Icon = feat.icon;
                 return (
                   <motion.div
@@ -406,6 +456,44 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* ── Partners / Trusted By ── */}
+        {partnerList.length > 0 && (
+          <section className="py-16 relative z-20 overflow-hidden border-y border-white/5 bg-black/30">
+            <div className="container mx-auto px-4 text-center mb-8">
+              <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+                <div className="inline-flex items-center gap-2 mb-2">
+                  <Star className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-bold text-primary uppercase tracking-widest">Trusted By The Best</span>
+                  <Star className="w-4 h-4 text-primary" />
+                </div>
+                <h3 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">
+                  YouTubers & Studios That Trust ArveX
+                </h3>
+              </motion.div>
+            </div>
+            <div className="relative">
+              <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
+              <div className="flex gap-0 overflow-hidden">
+                <div className="flex gap-8 animate-scroll shrink-0">
+                  {[...partnerList, ...partnerList].map((p, i) => (
+                    <a key={i} href={p.websiteUrl || "#"} target="_blank" rel="noopener noreferrer" className="shrink-0 flex flex-col items-center gap-3 group">
+                      <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden group-hover:border-primary/50 group-hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all duration-300">
+                        {p.logoUrl ? (
+                          <img src={p.logoUrl} alt={p.name} className="w-16 h-16 object-contain rounded-xl" />
+                        ) : (
+                          <span className="text-2xl font-black text-primary">{p.name[0]}</span>
+                        )}
+                      </div>
+                      <span className="text-xs font-bold text-muted-foreground group-hover:text-white transition-colors uppercase tracking-wide whitespace-nowrap">{p.name}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* ── Server Locations ── */}
         <section className="py-28 relative z-20 overflow-hidden border-y border-white/5">
@@ -503,58 +591,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Partners / Trusted By ── */}
-        {partnerList.length > 0 && (
-          <section className="py-20 relative z-20 overflow-hidden border-y border-white/5 bg-black/30">
-            <div className="container mx-auto px-4 text-center mb-10">
-              <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-              >
-                <div className="inline-flex items-center gap-2 mb-3">
-                  <Star className="w-4 h-4 text-primary" />
-                  <span className="text-xs font-bold text-primary uppercase tracking-widest">Trusted By The Best</span>
-                  <Star className="w-4 h-4 text-primary" />
-                </div>
-                <h3 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">
-                  YouTubers & Studios That Trust ArveX
-                </h3>
-              </motion.div>
-            </div>
-
-            <div className="relative">
-              <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
-              <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
-
-              <div className="flex gap-0 overflow-hidden">
-                <div className="flex gap-8 animate-scroll shrink-0">
-                  {[...partnerList, ...partnerList].map((p, i) => (
-                    <a
-                      key={i}
-                      href={p.websiteUrl || "#"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="shrink-0 flex flex-col items-center gap-3 group"
-                    >
-                      <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden group-hover:border-primary/50 group-hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all duration-300">
-                        {p.logoUrl ? (
-                          <img src={p.logoUrl} alt={p.name} className="w-16 h-16 object-contain rounded-xl" />
-                        ) : (
-                          <span className="text-2xl font-black text-primary">{p.name[0]}</span>
-                        )}
-                      </div>
-                      <span className="text-xs font-bold text-muted-foreground group-hover:text-white transition-colors uppercase tracking-wide whitespace-nowrap">
-                        {p.name}
-                      </span>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
         {/* ── Testimonials ── */}
         <section className="py-28 relative z-20 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-violet-950/10 to-transparent pointer-events-none" />
@@ -577,7 +613,7 @@ export default function Home() {
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-              {TESTIMONIALS.map((t, i) => (
+              {activeTestimonials.map((t, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 30 }}
@@ -702,7 +738,7 @@ export default function Home() {
               </p>
             </motion.div>
             <div className="flex flex-wrap justify-center gap-4">
-              {SERVICES.map((svc) => (
+              {activeServices.map((svc) => (
                 <Link key={svc.key} href={svc.href}>
                   <motion.div
                     whileHover={{ scale: 1.05, y: -2 }}
@@ -738,7 +774,7 @@ export default function Home() {
             </motion.div>
 
             <div className="space-y-3">
-              {FAQS.map((faq, i) => (
+              {activeFaqs.map((faq, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 10 }}
@@ -813,10 +849,10 @@ export default function Home() {
                 <span className="text-xs font-bold tracking-widest text-primary uppercase">Instant Deployment Available</span>
               </div>
               <h2 className="text-5xl md:text-7xl font-black text-white mb-6 uppercase tracking-tighter glow-text">
-                Ready to Dominate?
+                {ctaTitle}
               </h2>
               <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto font-medium">
-                Deploy your premium infrastructure in seconds and experience the ArveX difference today.
+                {ctaSubtitle}
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <Link href="/register">

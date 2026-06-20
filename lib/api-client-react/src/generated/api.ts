@@ -30,12 +30,16 @@ import type {
   ForgotPasswordInput,
   GetPlansParams,
   HealthStatus,
+  KeyValueMap,
   LoginInput,
   MessageResponse,
   Order,
   OrderInput,
   Partner,
   PartnerInput,
+  PaymentSessionInput,
+  PaymentSessionResult,
+  PaypalOrderResult,
   Plan,
   PlanInput,
   PlanProvisionMapping,
@@ -3470,6 +3474,661 @@ export function useGetProvisionStatus<TData = Awaited<ReturnType<typeof getProvi
 
 
 
+
+export const getGetSiteSettingsUrl = () => {
+
+
+
+
+  return `/api/admin/site-settings`
+}
+
+/**
+ * @summary Get site settings (admin)
+ */
+export const getSiteSettings = async ( options?: RequestInit): Promise<KeyValueMap> => {
+
+  return customFetch<KeyValueMap>(getGetSiteSettingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetSiteSettingsQueryKey = () => {
+    return [
+    `/api/admin/site-settings`
+    ] as const;
+    }
+
+
+export const getGetSiteSettingsQueryOptions = <TData = Awaited<ReturnType<typeof getSiteSettings>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSiteSettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSiteSettingsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSiteSettings>>> = ({ signal }) => getSiteSettings({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSiteSettings>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetSiteSettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getSiteSettings>>>
+export type GetSiteSettingsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get site settings (admin)
+ */
+
+export function useGetSiteSettings<TData = Awaited<ReturnType<typeof getSiteSettings>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSiteSettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetSiteSettingsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getUpdateSiteSettingsUrl = () => {
+
+
+
+
+  return `/api/admin/site-settings`
+}
+
+/**
+ * @summary Update site settings (admin)
+ */
+export const updateSiteSettings = async (keyValueMap: KeyValueMap, options?: RequestInit): Promise<MessageResponse> => {
+
+  return customFetch<MessageResponse>(getUpdateSiteSettingsUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      keyValueMap,)
+  }
+);}
+
+
+
+
+export const getUpdateSiteSettingsMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSiteSettings>>, TError,{data: BodyType<KeyValueMap>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateSiteSettings>>, TError,{data: BodyType<KeyValueMap>}, TContext> => {
+
+const mutationKey = ['updateSiteSettings'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateSiteSettings>>, {data: BodyType<KeyValueMap>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  updateSiteSettings(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateSiteSettingsMutationResult = NonNullable<Awaited<ReturnType<typeof updateSiteSettings>>>
+    export type UpdateSiteSettingsMutationBody = BodyType<KeyValueMap>
+    export type UpdateSiteSettingsMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update site settings (admin)
+ */
+export const useUpdateSiteSettings = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSiteSettings>>, TError,{data: BodyType<KeyValueMap>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateSiteSettings>>,
+        TError,
+        {data: BodyType<KeyValueMap>},
+        TContext
+      > => {
+      return useMutation(getUpdateSiteSettingsMutationOptions(options));
+    }
+
+export const getGetPublicSiteSettingsUrl = () => {
+
+
+
+
+  return `/api/site-settings`
+}
+
+/**
+ * @summary Get site settings (public, for frontend rendering)
+ */
+export const getPublicSiteSettings = async ( options?: RequestInit): Promise<KeyValueMap> => {
+
+  return customFetch<KeyValueMap>(getGetPublicSiteSettingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPublicSiteSettingsQueryKey = () => {
+    return [
+    `/api/site-settings`
+    ] as const;
+    }
+
+
+export const getGetPublicSiteSettingsQueryOptions = <TData = Awaited<ReturnType<typeof getPublicSiteSettings>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicSiteSettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPublicSiteSettingsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPublicSiteSettings>>> = ({ signal }) => getPublicSiteSettings({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPublicSiteSettings>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPublicSiteSettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getPublicSiteSettings>>>
+export type GetPublicSiteSettingsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get site settings (public, for frontend rendering)
+ */
+
+export function useGetPublicSiteSettings<TData = Awaited<ReturnType<typeof getPublicSiteSettings>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicSiteSettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPublicSiteSettingsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetBillingSettingsUrl = () => {
+
+
+
+
+  return `/api/admin/billing-settings`
+}
+
+/**
+ * @summary Get billing/gateway settings (admin)
+ */
+export const getBillingSettings = async ( options?: RequestInit): Promise<KeyValueMap> => {
+
+  return customFetch<KeyValueMap>(getGetBillingSettingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetBillingSettingsQueryKey = () => {
+    return [
+    `/api/admin/billing-settings`
+    ] as const;
+    }
+
+
+export const getGetBillingSettingsQueryOptions = <TData = Awaited<ReturnType<typeof getBillingSettings>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBillingSettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBillingSettingsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBillingSettings>>> = ({ signal }) => getBillingSettings({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBillingSettings>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetBillingSettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getBillingSettings>>>
+export type GetBillingSettingsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get billing/gateway settings (admin)
+ */
+
+export function useGetBillingSettings<TData = Awaited<ReturnType<typeof getBillingSettings>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBillingSettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetBillingSettingsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getUpdateBillingSettingsUrl = () => {
+
+
+
+
+  return `/api/admin/billing-settings`
+}
+
+/**
+ * @summary Update billing/gateway settings (admin)
+ */
+export const updateBillingSettings = async (keyValueMap: KeyValueMap, options?: RequestInit): Promise<MessageResponse> => {
+
+  return customFetch<MessageResponse>(getUpdateBillingSettingsUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      keyValueMap,)
+  }
+);}
+
+
+
+
+export const getUpdateBillingSettingsMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBillingSettings>>, TError,{data: BodyType<KeyValueMap>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateBillingSettings>>, TError,{data: BodyType<KeyValueMap>}, TContext> => {
+
+const mutationKey = ['updateBillingSettings'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateBillingSettings>>, {data: BodyType<KeyValueMap>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  updateBillingSettings(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateBillingSettingsMutationResult = NonNullable<Awaited<ReturnType<typeof updateBillingSettings>>>
+    export type UpdateBillingSettingsMutationBody = BodyType<KeyValueMap>
+    export type UpdateBillingSettingsMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update billing/gateway settings (admin)
+ */
+export const useUpdateBillingSettings = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBillingSettings>>, TError,{data: BodyType<KeyValueMap>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateBillingSettings>>,
+        TError,
+        {data: BodyType<KeyValueMap>},
+        TContext
+      > => {
+      return useMutation(getUpdateBillingSettingsMutationOptions(options));
+    }
+
+export const getCreateStripeSessionUrl = () => {
+
+
+
+
+  return `/api/payments/stripe/create-session`
+}
+
+/**
+ * @summary Create a Stripe checkout session
+ */
+export const createStripeSession = async (paymentSessionInput: PaymentSessionInput, options?: RequestInit): Promise<PaymentSessionResult> => {
+
+  return customFetch<PaymentSessionResult>(getCreateStripeSessionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      paymentSessionInput,)
+  }
+);}
+
+
+
+
+export const getCreateStripeSessionMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createStripeSession>>, TError,{data: BodyType<PaymentSessionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createStripeSession>>, TError,{data: BodyType<PaymentSessionInput>}, TContext> => {
+
+const mutationKey = ['createStripeSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createStripeSession>>, {data: BodyType<PaymentSessionInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createStripeSession(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateStripeSessionMutationResult = NonNullable<Awaited<ReturnType<typeof createStripeSession>>>
+    export type CreateStripeSessionMutationBody = BodyType<PaymentSessionInput>
+    export type CreateStripeSessionMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Create a Stripe checkout session
+ */
+export const useCreateStripeSession = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createStripeSession>>, TError,{data: BodyType<PaymentSessionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createStripeSession>>,
+        TError,
+        {data: BodyType<PaymentSessionInput>},
+        TContext
+      > => {
+      return useMutation(getCreateStripeSessionMutationOptions(options));
+    }
+
+export const getStripeWebhookUrl = () => {
+
+
+
+
+  return `/api/payments/stripe/webhook`
+}
+
+/**
+ * @summary Stripe webhook receiver
+ */
+export const stripeWebhook = async ( options?: RequestInit): Promise<MessageResponse> => {
+
+  return customFetch<MessageResponse>(getStripeWebhookUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getStripeWebhookMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stripeWebhook>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof stripeWebhook>>, TError,void, TContext> => {
+
+const mutationKey = ['stripeWebhook'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stripeWebhook>>, void> = () => {
+
+
+          return  stripeWebhook(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StripeWebhookMutationResult = NonNullable<Awaited<ReturnType<typeof stripeWebhook>>>
+
+    export type StripeWebhookMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Stripe webhook receiver
+ */
+export const useStripeWebhook = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stripeWebhook>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof stripeWebhook>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getStripeWebhookMutationOptions(options));
+    }
+
+export const getCreatePaypalOrderUrl = () => {
+
+
+
+
+  return `/api/payments/paypal/create-order`
+}
+
+/**
+ * @summary Create a PayPal order
+ */
+export const createPaypalOrder = async (paymentSessionInput: PaymentSessionInput, options?: RequestInit): Promise<PaypalOrderResult> => {
+
+  return customFetch<PaypalOrderResult>(getCreatePaypalOrderUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      paymentSessionInput,)
+  }
+);}
+
+
+
+
+export const getCreatePaypalOrderMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPaypalOrder>>, TError,{data: BodyType<PaymentSessionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPaypalOrder>>, TError,{data: BodyType<PaymentSessionInput>}, TContext> => {
+
+const mutationKey = ['createPaypalOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPaypalOrder>>, {data: BodyType<PaymentSessionInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createPaypalOrder(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePaypalOrderMutationResult = NonNullable<Awaited<ReturnType<typeof createPaypalOrder>>>
+    export type CreatePaypalOrderMutationBody = BodyType<PaymentSessionInput>
+    export type CreatePaypalOrderMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Create a PayPal order
+ */
+export const useCreatePaypalOrder = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPaypalOrder>>, TError,{data: BodyType<PaymentSessionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createPaypalOrder>>,
+        TError,
+        {data: BodyType<PaymentSessionInput>},
+        TContext
+      > => {
+      return useMutation(getCreatePaypalOrderMutationOptions(options));
+    }
+
+export const getCapturePaypalOrderUrl = (orderId: string,) => {
+
+
+
+
+  return `/api/payments/paypal/capture/${orderId}`
+}
+
+/**
+ * @summary Capture a PayPal order after approval
+ */
+export const capturePaypalOrder = async (orderId: string, options?: RequestInit): Promise<MessageResponse> => {
+
+  return customFetch<MessageResponse>(getCapturePaypalOrderUrl(orderId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getCapturePaypalOrderMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof capturePaypalOrder>>, TError,{orderId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof capturePaypalOrder>>, TError,{orderId: string}, TContext> => {
+
+const mutationKey = ['capturePaypalOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof capturePaypalOrder>>, {orderId: string}> = (props) => {
+          const {orderId} = props ?? {};
+
+          return  capturePaypalOrder(orderId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CapturePaypalOrderMutationResult = NonNullable<Awaited<ReturnType<typeof capturePaypalOrder>>>
+
+    export type CapturePaypalOrderMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Capture a PayPal order after approval
+ */
+export const useCapturePaypalOrder = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof capturePaypalOrder>>, TError,{orderId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof capturePaypalOrder>>,
+        TError,
+        {orderId: string},
+        TContext
+      > => {
+      return useMutation(getCapturePaypalOrderMutationOptions(options));
+    }
 
 export const getGetPublicStatsUrl = () => {
 

@@ -800,6 +800,89 @@ export const GetProvisionStatusResponse = zod.object({
 
 
 /**
+ * @summary Get site settings (admin)
+ */
+export const GetSiteSettingsResponse = zod.record(zod.string(), zod.string())
+
+
+/**
+ * @summary Update site settings (admin)
+ */
+export const UpdateSiteSettingsBody = zod.record(zod.string(), zod.string())
+
+export const UpdateSiteSettingsResponse = zod.object({
+  "message": zod.string()
+})
+
+
+/**
+ * @summary Get site settings (public, for frontend rendering)
+ */
+export const GetPublicSiteSettingsResponse = zod.record(zod.string(), zod.string())
+
+
+/**
+ * @summary Get billing/gateway settings (admin)
+ */
+export const GetBillingSettingsResponse = zod.record(zod.string(), zod.string())
+
+
+/**
+ * @summary Update billing/gateway settings (admin)
+ */
+export const UpdateBillingSettingsBody = zod.record(zod.string(), zod.string())
+
+export const UpdateBillingSettingsResponse = zod.object({
+  "message": zod.string()
+})
+
+
+/**
+ * @summary Create a Stripe checkout session
+ */
+export const CreateStripeSessionBody = zod.object({
+  "planId": zod.number()
+})
+
+export const CreateStripeSessionResponse = zod.object({
+  "url": zod.string()
+})
+
+
+/**
+ * @summary Stripe webhook receiver
+ */
+export const StripeWebhookResponse = zod.object({
+  "message": zod.string()
+})
+
+
+/**
+ * @summary Create a PayPal order
+ */
+export const CreatePaypalOrderBody = zod.object({
+  "planId": zod.number()
+})
+
+export const CreatePaypalOrderResponse = zod.object({
+  "id": zod.string(),
+  "approvalUrl": zod.string()
+})
+
+
+/**
+ * @summary Capture a PayPal order after approval
+ */
+export const CapturePaypalOrderParams = zod.object({
+  "orderId": zod.coerce.string()
+})
+
+export const CapturePaypalOrderResponse = zod.object({
+  "message": zod.string()
+})
+
+
+/**
  * @summary Get homepage statistics (customers, servers, uptime, support)
  */
 export const GetPublicStatsResponse = zod.object({

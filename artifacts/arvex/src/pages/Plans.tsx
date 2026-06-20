@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useGetPlans } from "@workspace/api-client-react";
 import { Navbar, Footer } from "@/components/Layout";
 import { PageTransition } from "@/components/PageTransition";
@@ -8,8 +9,10 @@ import {
   CloudLightning, Terminal, Gauge, GitBranch, Layers, BarChart3,
   ArrowRight, Star, CheckCircle2
 } from "lucide-react";
-import { Link } from "wouter";
 import { motion } from "framer-motion";
+import PaymentModal from "@/components/PaymentModal";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLocation } from "wouter";
 
 const CATEGORY_IMAGES: Record<string, string> = {
   vps: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1920&q=80",
@@ -624,6 +627,17 @@ export default function Plans({ category, title }: { category: string; title: st
   const { data: plans, isLoading } = useGetPlans({ category });
   const heroImage = CATEGORY_IMAGES[category] ?? CATEGORY_IMAGES.vps;
   const categoryFeatures = CATEGORY_FEATURES[category] ?? CATEGORY_FEATURES.vps;
+  const { user } = useAuth();
+  const [, navigate] = useLocation();
+  const [selectedPlan, setSelectedPlan] = useState<{ id: number; name: string; price: number } | null>(null);
+
+  const handleOrder = (plan: { id: number; name: string; price: number }) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    setSelectedPlan(plan);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -740,11 +754,12 @@ export default function Plans({ category, title }: { category: string; title: st
                       ))}
                     </ul>
 
-                    <Link href={`/client/orders/new?plan=${plan.id}`}>
-                      <Button className={`w-full h-14 font-black uppercase tracking-widest text-sm transition-all ${plan.isFeatured ? 'btn-glow bg-primary hover:bg-primary/90 text-white hover:scale-[1.02]' : 'bg-white/5 hover:bg-primary/20 text-white border border-white/10 hover:border-primary/50'}`}>
-                        Order Now <ArrowRight className="ml-2 w-4 h-4" />
-                      </Button>
-                    </Link>
+                    <Button
+                      onClick={() => handleOrder({ id: plan.id, name: plan.name, price: parseFloat(plan.price as unknown as string) })}
+                      className={`w-full h-14 font-black uppercase tracking-widest text-sm transition-all ${plan.isFeatured ? 'btn-glow bg-primary hover:bg-primary/90 text-white hover:scale-[1.02]' : 'bg-white/5 hover:bg-primary/20 text-white border border-white/10 hover:border-primary/50'}`}
+                    >
+                      Order Now <ArrowRight className="ml-2 w-4 h-4" />
+                    </Button>
                   </motion.div>
                 ))}
               </div>
@@ -785,6 +800,15 @@ export default function Plans({ category, title }: { category: string; title: st
       </section>
 
       <Footer />
+
+      {selectedPlan && (
+        <PaymentModal
+          planId={selectedPlan.id}
+          planName={selectedPlan.name}
+          planPrice={selectedPlan.price}
+          onClose={() => setSelectedPlan(null)}
+        />
+      )}
     </div>
   );
 }

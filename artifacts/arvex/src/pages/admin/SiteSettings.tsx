@@ -1,15 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useGetSiteSettings, useUpdateSiteSettings } from "@workspace/api-client-react";
 import {
   Globe, Zap, MapPin, Star, MessageSquare, Shield, Server,
-  Save, Plus, Trash2, ChevronDown, ChevronUp, RefreshCw
+  Save, Plus, Trash2, ChevronDown, ChevronUp, RefreshCw, Loader2, CheckCircle2
 } from "lucide-react";
-
-const STORAGE_KEY = "arvex_site_settings";
 
 type Service = { key: string; title: string; href: string; desc: string; badge: string };
 type Feature = { title: string; desc: string };
@@ -85,23 +84,49 @@ const DEFAULT_SETTINGS: SiteSettings = {
   pricingFrom: "$1.99",
 };
 
-function loadSettings(): SiteSettings {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
-  } catch {}
-  return DEFAULT_SETTINGS;
+function settingsToKv(s: SiteSettings): Record<string, string> {
+  return {
+    heroTitle: s.heroTitle,
+    heroSubtitle: s.heroSubtitle,
+    heroBadge: s.heroBadge,
+    heroStats: JSON.stringify(s.heroStats),
+    services: JSON.stringify(s.services),
+    features: JSON.stringify(s.features),
+    locations: JSON.stringify(s.locations),
+    testimonials: JSON.stringify(s.testimonials),
+    faqs: JSON.stringify(s.faqs),
+    ctaTitle: s.ctaTitle,
+    ctaSubtitle: s.ctaSubtitle,
+    footerTagline: s.footerTagline,
+    pricingFrom: s.pricingFrom,
+  };
 }
 
-function saveSettings(settings: SiteSettings) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-  window.dispatchEvent(new Event("arvex_settings_updated"));
+function kvToSettings(kv: Record<string, string>): SiteSettings {
+  const tryParse = <T,>(key: string, fallback: T): T => {
+    try { return kv[key] ? JSON.parse(kv[key]) : fallback; } catch { return fallback; }
+  };
+  return {
+    heroTitle: kv.heroTitle ?? DEFAULT_SETTINGS.heroTitle,
+    heroSubtitle: kv.heroSubtitle ?? DEFAULT_SETTINGS.heroSubtitle,
+    heroBadge: kv.heroBadge ?? DEFAULT_SETTINGS.heroBadge,
+    heroStats: tryParse("heroStats", DEFAULT_SETTINGS.heroStats),
+    services: tryParse("services", DEFAULT_SETTINGS.services),
+    features: tryParse("features", DEFAULT_SETTINGS.features),
+    locations: tryParse("locations", DEFAULT_SETTINGS.locations),
+    testimonials: tryParse("testimonials", DEFAULT_SETTINGS.testimonials),
+    faqs: tryParse("faqs", DEFAULT_SETTINGS.faqs),
+    ctaTitle: kv.ctaTitle ?? DEFAULT_SETTINGS.ctaTitle,
+    ctaSubtitle: kv.ctaSubtitle ?? DEFAULT_SETTINGS.ctaSubtitle,
+    footerTagline: kv.footerTagline ?? DEFAULT_SETTINGS.footerTagline,
+    pricingFrom: kv.pricingFrom ?? DEFAULT_SETTINGS.pricingFrom,
+  };
 }
 
 function SectionCard({ title, icon: Icon, children, defaultOpen = false }: { title: string; icon: React.ElementType; children: React.ReactNode; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <Card className="glass-panel border-white/10">
+    <div className="glass-panel border-white/10 rounded-xl">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between p-6 text-left hover:bg-white/3 transition-colors rounded-t-xl"
@@ -115,27 +140,44 @@ function SectionCard({ title, icon: Icon, children, defaultOpen = false }: { tit
         {open ? <ChevronUp className="w-5 h-5 text-muted-foreground" /> : <ChevronDown className="w-5 h-5 text-muted-foreground" />}
       </button>
       {open && <CardContent className="px-6 pb-6 pt-0 border-t border-white/5">{children}</CardContent>}
-    </Card>
+    </div>
   );
 }
 
 export default function AdminSiteSettings() {
-  const [settings, setSettings] = useState<SiteSettings>(loadSettings);
   const { toast } = useToast();
+  const { data: savedKv, isLoading, refetch } = useGetSiteSettings();
+  const updateMutation = useUpdateSiteSettings({
+    mutation: {
+      onSuccess: () => {
+        toast({ title: "✅ Site settings saved to database!", description: "Changes are live across all devices." });
+        refetch();
+      },
+      onError: () => {
+        toast({ title: "❌ Failed to save settings", variant: "destructive" });
+      },
+    },
+  });
+
+  const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
+
+  useEffect(() => {
+    if (savedKv && Object.keys(savedKv).length > 0) {
+      setSettings(kvToSettings(savedKv as Record<string, string>));
+    }
+  }, [savedKv]);
 
   const update = <K extends keyof SiteSettings>(key: K, value: SiteSettings[K]) => {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
   const handleSave = () => {
-    saveSettings(settings);
-    toast({ title: "✅ Site settings saved!", description: "Changes are live on the frontend." });
+    updateMutation.mutate({ data: settingsToKv(settings) });
   };
 
   const handleReset = () => {
     setSettings(DEFAULT_SETTINGS);
-    saveSettings(DEFAULT_SETTINGS);
-    toast({ title: "Settings reset to defaults." });
+    updateMutation.mutate({ data: settingsToKv(DEFAULT_SETTINGS) });
   };
 
   const updateListItem = <T,>(key: keyof SiteSettings, index: number, field: keyof T, value: string | number) => {
@@ -154,25 +196,35 @@ export default function AdminSiteSettings() {
     update(key, arr as SiteSettings[typeof key]);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 max-w-5xl">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white">Site Customizer</h1>
-          <p className="text-muted-foreground mt-1">Edit all homepage content — hero, services, features, locations, testimonials, FAQ.</p>
+          <p className="text-muted-foreground mt-1">Edit all homepage content — saved to database, live everywhere.</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" onClick={handleReset} className="border-white/10 text-muted-foreground hover:text-white">
+          <Button variant="outline" onClick={handleReset} disabled={updateMutation.isPending} className="border-white/10 text-muted-foreground hover:text-white">
             <RefreshCw className="w-4 h-4 mr-2" /> Reset
           </Button>
-          <Button onClick={handleSave} className="btn-glow bg-primary hover:bg-primary/90 text-white font-bold">
-            <Save className="w-4 h-4 mr-2" /> Save All Changes
+          <Button onClick={handleSave} disabled={updateMutation.isPending} className="btn-glow bg-primary hover:bg-primary/90 text-white font-bold">
+            {updateMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+            Save All Changes
           </Button>
         </div>
       </div>
 
-      <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 text-sm text-yellow-300 font-medium">
-        ⚡ Changes are saved to the browser's local storage and apply instantly on the live site. For permanent storage across devices, use the Content CMS for text pages.
+      <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-sm text-green-300 font-medium flex items-center gap-2">
+        <CheckCircle2 className="w-4 h-4 shrink-0" />
+        Settings are saved to the database and apply globally — no browser cache dependency.
       </div>
 
       {/* Hero Section */}
@@ -199,18 +251,8 @@ export default function AdminSiteSettings() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {settings.heroStats.map((stat, i) => (
                 <div key={i} className="flex gap-2 p-3 rounded-xl bg-black/30 border border-white/5">
-                  <Input
-                    value={stat.label}
-                    onChange={e => updateListItem<StatOverride>("heroStats", i, "label", e.target.value)}
-                    placeholder="Label"
-                    className="bg-transparent border-white/10 text-white text-xs flex-1"
-                  />
-                  <Input
-                    value={stat.value}
-                    onChange={e => updateListItem<StatOverride>("heroStats", i, "value", e.target.value)}
-                    placeholder="Value"
-                    className="bg-transparent border-white/10 text-white text-xs flex-1"
-                  />
+                  <Input value={stat.label} onChange={e => updateListItem<StatOverride>("heroStats", i, "label", e.target.value)} placeholder="Label" className="bg-transparent border-white/10 text-white text-xs flex-1" />
+                  <Input value={stat.value} onChange={e => updateListItem<StatOverride>("heroStats", i, "value", e.target.value)} placeholder="Value" className="bg-transparent border-white/10 text-white text-xs flex-1" />
                 </div>
               ))}
             </div>
@@ -236,11 +278,7 @@ export default function AdminSiteSettings() {
               <Textarea value={svc.desc} onChange={e => updateListItem<Service>("services", i, "desc", e.target.value)} placeholder="Description" className="bg-black/50 border-white/10 text-white text-sm min-h-[60px]" />
             </div>
           ))}
-          <Button
-            variant="outline"
-            onClick={() => addListItem<Service>("services", { key: `custom-${Date.now()}`, title: "New Service", href: "/new", desc: "Service description.", badge: "FROM $X.XX/MO" })}
-            className="w-full border-dashed border-white/20 text-muted-foreground hover:text-white hover:border-primary/40"
-          >
+          <Button variant="outline" onClick={() => addListItem<Service>("services", { key: `custom-${Date.now()}`, title: "New Service", href: "/new", desc: "Service description.", badge: "FROM $X.XX/MO" })} className="w-full border-dashed border-white/20 text-muted-foreground hover:text-white hover:border-primary/40">
             <Plus className="w-4 h-4 mr-2" /> Add Service
           </Button>
         </div>
@@ -260,11 +298,7 @@ export default function AdminSiteSettings() {
               <Textarea value={feat.desc} onChange={e => updateListItem<Feature>("features", i, "desc", e.target.value)} placeholder="Feature description" className="bg-black/50 border-white/10 text-white text-sm min-h-[56px]" />
             </div>
           ))}
-          <Button
-            variant="outline"
-            onClick={() => addListItem<Feature>("features", { title: "New Feature", desc: "Feature description here." })}
-            className="w-full border-dashed border-white/20 text-muted-foreground hover:text-white hover:border-primary/40"
-          >
+          <Button variant="outline" onClick={() => addListItem<Feature>("features", { title: "New Feature", desc: "Feature description here." })} className="w-full border-dashed border-white/20 text-muted-foreground hover:text-white hover:border-primary/40">
             <Plus className="w-4 h-4 mr-2" /> Add Feature
           </Button>
         </div>
@@ -287,21 +321,11 @@ export default function AdminSiteSettings() {
                 <Input value={loc.country} onChange={e => updateListItem<Location>("locations", i, "country", e.target.value)} placeholder="Country" className="bg-black/50 border-white/10 text-white text-sm" />
                 <Input value={loc.region} onChange={e => updateListItem<Location>("locations", i, "region", e.target.value)} placeholder="Region" className="bg-black/50 border-white/10 text-white text-sm" />
                 <Input value={loc.ping} onChange={e => updateListItem<Location>("locations", i, "ping", e.target.value)} placeholder="Ping e.g. ~5ms" className="bg-black/50 border-white/10 text-white text-sm" />
-                <Input
-                  type="number"
-                  value={loc.nodes}
-                  onChange={e => updateListItem<Location>("locations", i, "nodes", parseInt(e.target.value) || 0)}
-                  placeholder="Active nodes"
-                  className="bg-black/50 border-white/10 text-white text-sm"
-                />
+                <Input type="number" value={loc.nodes} onChange={e => updateListItem<Location>("locations", i, "nodes", parseInt(e.target.value) || 0)} placeholder="Active nodes" className="bg-black/50 border-white/10 text-white text-sm" />
               </div>
             </div>
           ))}
-          <Button
-            variant="outline"
-            onClick={() => addListItem<Location>("locations", { city: "New City", country: "Country", flag: "🏳️", region: "Region", ping: "~10ms", nodes: 10 })}
-            className="w-full border-dashed border-white/20 text-muted-foreground hover:text-white hover:border-primary/40"
-          >
+          <Button variant="outline" onClick={() => addListItem<Location>("locations", { city: "New City", country: "Country", flag: "🏳️", region: "Region", ping: "~10ms", nodes: 10 })} className="w-full border-dashed border-white/20 text-muted-foreground hover:text-white hover:border-primary/40">
             <Plus className="w-4 h-4 mr-2" /> Add Location
           </Button>
         </div>
@@ -326,11 +350,7 @@ export default function AdminSiteSettings() {
               <Textarea value={t.text} onChange={e => updateListItem<Testimonial>("testimonials", i, "text", e.target.value)} placeholder="Review text" className="bg-black/50 border-white/10 text-white text-sm min-h-[70px]" />
             </div>
           ))}
-          <Button
-            variant="outline"
-            onClick={() => addListItem<Testimonial>("testimonials", { name: "Customer Name", role: "Customer Role", text: "Great hosting service!", service: "VPS Hosting" })}
-            className="w-full border-dashed border-white/20 text-muted-foreground hover:text-white hover:border-primary/40"
-          >
+          <Button variant="outline" onClick={() => addListItem<Testimonial>("testimonials", { name: "Customer Name", role: "Customer Role", text: "Great hosting service!", service: "VPS Hosting" })} className="w-full border-dashed border-white/20 text-muted-foreground hover:text-white hover:border-primary/40">
             <Plus className="w-4 h-4 mr-2" /> Add Testimonial
           </Button>
         </div>
@@ -350,11 +370,7 @@ export default function AdminSiteSettings() {
               <Textarea value={faq.a} onChange={e => updateListItem<Faq>("faqs", i, "a", e.target.value)} placeholder="Answer" className="bg-black/50 border-white/10 text-white text-sm min-h-[70px]" />
             </div>
           ))}
-          <Button
-            variant="outline"
-            onClick={() => addListItem<Faq>("faqs", { q: "New question?", a: "Answer here." })}
-            className="w-full border-dashed border-white/20 text-muted-foreground hover:text-white hover:border-primary/40"
-          >
+          <Button variant="outline" onClick={() => addListItem<Faq>("faqs", { q: "New question?", a: "Answer here." })} className="w-full border-dashed border-white/20 text-muted-foreground hover:text-white hover:border-primary/40">
             <Plus className="w-4 h-4 mr-2" /> Add FAQ
           </Button>
         </div>
@@ -379,11 +395,12 @@ export default function AdminSiteSettings() {
       </SectionCard>
 
       <div className="flex justify-end gap-3 pt-4">
-        <Button variant="outline" onClick={handleReset} className="border-white/10 text-muted-foreground hover:text-white">
+        <Button variant="outline" onClick={handleReset} disabled={updateMutation.isPending} className="border-white/10 text-muted-foreground hover:text-white">
           <RefreshCw className="w-4 h-4 mr-2" /> Reset to Defaults
         </Button>
-        <Button onClick={handleSave} size="lg" className="btn-glow bg-primary hover:bg-primary/90 text-white font-bold px-8">
-          <Save className="w-4 h-4 mr-2" /> Save All Changes
+        <Button onClick={handleSave} disabled={updateMutation.isPending} size="lg" className="btn-glow bg-primary hover:bg-primary/90 text-white font-bold px-8">
+          {updateMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+          Save All Changes
         </Button>
       </div>
     </div>

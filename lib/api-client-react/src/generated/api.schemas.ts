@@ -5,6 +5,21 @@
  * ArveX Hosting API specification
  * OpenAPI spec version: 0.1.0
  */
+export interface KeyValueMap {[key: string]: string}
+
+export interface PaymentSessionInput {
+  planId: number;
+}
+
+export interface PaymentSessionResult {
+  url: string;
+}
+
+export interface PaypalOrderResult {
+  id: string;
+  approvalUrl: string;
+}
+
 export interface HealthStatus {
   status: string;
 }

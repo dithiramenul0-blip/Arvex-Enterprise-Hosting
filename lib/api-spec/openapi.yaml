@@ -890,6 +890,170 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProvisionStatus"
 
+  # ─── Site Settings ───────────────────────────────────────────────────
+  /admin/site-settings:
+    get:
+      operationId: getSiteSettings
+      tags: [admin]
+      summary: Get site settings (admin)
+      responses:
+        "200":
+          description: Site settings JSON
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeyValueMap"
+    put:
+      operationId: updateSiteSettings
+      tags: [admin]
+      summary: Update site settings (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeyValueMap"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /site-settings:
+    get:
+      operationId: getPublicSiteSettings
+      tags: [admin]
+      summary: Get site settings (public, for frontend rendering)
+      responses:
+        "200":
+          description: Site settings JSON
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeyValueMap"
+
+  # ─── Billing Settings ─────────────────────────────────────────────────
+  /admin/billing-settings:
+    get:
+      operationId: getBillingSettings
+      tags: [admin]
+      summary: Get billing/gateway settings (admin)
+      responses:
+        "200":
+          description: Billing settings JSON
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeyValueMap"
+    put:
+      operationId: updateBillingSettings
+      tags: [admin]
+      summary: Update billing/gateway settings (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeyValueMap"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # ─── Payments ─────────────────────────────────────────────────────────
+  /payments/stripe/create-session:
+    post:
+      operationId: createStripeSession
+      tags: [orders]
+      summary: Create a Stripe checkout session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentSessionInput"
+      responses:
+        "200":
+          description: Stripe checkout URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentSessionResult"
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /payments/stripe/webhook:
+    post:
+      operationId: stripeWebhook
+      tags: [orders]
+      summary: Stripe webhook receiver
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /payments/paypal/create-order:
+    post:
+      operationId: createPaypalOrder
+      tags: [orders]
+      summary: Create a PayPal order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentSessionInput"
+      responses:
+        "200":
+          description: PayPal order details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaypalOrderResult"
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /payments/paypal/capture/{orderId}:
+    post:
+      operationId: capturePaypalOrder
+      tags: [orders]
+      summary: Capture a PayPal order after approval
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Capture result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   # ─── Stats ────────────────────────────────────────────────────────────
   /stats/public:
     get:
@@ -920,6 +1084,34 @@ paths:
 # ─── Components ────────────────────────────────────────────────────────────
 components:
   schemas:
+    KeyValueMap:
+      type: object
+      additionalProperties:
+        type: string
+
+    PaymentSessionInput:
+      type: object
+      required: [planId]
+      properties:
+        planId:
+          type: integer
+
+    PaymentSessionResult:
+      type: object
+      required: [url]
+      properties:
+        url:
+          type: string
+
+    PaypalOrderResult:
+      type: object
+      required: [id, approvalUrl]
+      properties:
+        id:
+          type: string
+        approvalUrl:
+          type: string
+
     HealthStatus:
       type: object
       properties:

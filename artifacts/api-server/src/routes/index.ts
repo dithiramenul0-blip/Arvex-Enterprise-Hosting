@@ -11,6 +11,9 @@ import contentRouter from "./content.js";
 import adminRouter from "./admin.js";
 import statsRouter from "./stats.js";
 import provisioningRouter from "./provisioning.js";
+import siteSettingsRouter from "./site-settings.js";
+import billingSettingsRouter from "./billing-settings.js";
+import paymentsRouter from "./payments.js";
 
 const router: IRouter = Router();
 
@@ -26,5 +29,8 @@ router.use("/content", contentRouter);
 router.use("/admin", adminRouter);
 router.use("/admin", provisioningRouter);
 router.use("/stats", statsRouter);
+router.use(siteSettingsRouter);
+router.use(billingSettingsRouter);
+router.use(paymentsRouter);
 
 export default router;
