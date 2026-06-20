@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useEffect } from "react";
-import { useGetMe, User, getGetMeQueryKey } from "@workspace/api-client-react";
-import { useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useGetMe, User, getGetMeQueryKey, setAuthTokenGetter } from "@workspace/api-client-react";
+
+setAuthTokenGetter(() => localStorage.getItem("arvex_token"));
 
 interface AuthContextType {
   user: User | null;
