@@ -753,65 +753,14 @@ export default function Plans({ category, title }: { category: string; title: st
         </div>
       </main>
 
-      {/* ── All Included Features ── */}
-      <section className="py-24 relative z-20 border-t border-white/5 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
-        <div className="container mx-auto px-4 relative z-10">
+      {/* Trust badges */}
+      <section className="py-16 relative z-20 border-t border-white/5">
+        <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <div className="inline-block px-4 py-1 rounded-full border border-primary/30 bg-primary/10 text-xs font-bold text-primary uppercase tracking-widest mb-4">
-              Everything Included
-            </div>
-            <h2 className="text-4xl md:text-5xl font-black text-white glow-text mb-4 uppercase tracking-tight">
-              400+ Features on Every Plan
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto font-medium text-lg">
-              No hidden extras. Every feature listed below is included in your plan from day one.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {categoryFeatures.map((group, gi) => {
-              const Icon = group.icon;
-              return (
-                <motion.div
-                  key={gi}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: gi * 0.07 }}
-                  className="glass-panel p-8 rounded-2xl relative overflow-hidden group hover:border-glow transition-all duration-300"
-                >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center group-hover:bg-primary/25 transition-colors">
-                      <Icon className="w-6 h-6 text-primary" />
-                    </div>
-                    <h3 className="text-lg font-black text-white uppercase tracking-tight">{group.category}</h3>
-                  </div>
-                  <ul className="space-y-3">
-                    {group.items.map((item, ii) => (
-                      <li key={ii} className="flex items-start gap-3 text-sm text-muted-foreground font-medium">
-                        <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5 drop-shadow-[0_0_6px_rgba(124,58,237,0.6)]" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          {/* Trust badges */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-20 text-center"
+            className="text-center"
           >
             <div className="inline-flex flex-wrap justify-center gap-6 glass-panel px-8 py-6 rounded-2xl max-w-4xl mx-auto">
               {[
