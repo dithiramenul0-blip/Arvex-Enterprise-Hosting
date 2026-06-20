@@ -35,6 +35,7 @@ import AdminPterodactyl from "@/pages/admin/Pterodactyl";
 import AdminProxmox from "@/pages/admin/Proxmox";
 import AdminPlanMappings from "@/pages/admin/PlanMappings";
 import AdminProvisions from "@/pages/admin/Provisions";
+import AdminSiteSettings from "@/pages/admin/SiteSettings";
 
 const queryClient = new QueryClient();
 
@@ -144,6 +145,9 @@ function Router() {
       </Route>
       <Route path="/admin/provisions">
         {() => <ProtectedRoute adminOnly component={() => <AdminLayout><AdminProvisions /></AdminLayout>} />}
+      </Route>
+      <Route path="/admin/site-settings">
+        {() => <ProtectedRoute adminOnly component={() => <AdminLayout><AdminSiteSettings /></AdminLayout>} />}
       </Route>
 
       <Route component={NotFound} />

@@ -3,9 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { useGetPublicStats, useGetPartners } from "@workspace/api-client-react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Shield, Zap, Server, Globe, Headset, HardDrive, Cpu, Bot, ArrowRight, Wifi, Star, ChevronRight, Lock, BarChart3 } from "lucide-react";
+import {
+  Shield, Zap, Server, Globe, Headset, HardDrive, Cpu, Bot, ArrowRight,
+  Wifi, Star, ChevronRight, Lock, BarChart3, MapPin, CheckCircle2,
+  Quote, ChevronDown, Clock, Network, Database, RefreshCw, Eye, Layers,
+  GitBranch, Terminal, CloudLightning, Gauge, Award, MessageSquare
+} from "lucide-react";
 import { PageTransition } from "@/components/PageTransition";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 const SERVICE_IMAGES: Record<string, string> = {
   vps: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80",
@@ -32,6 +37,126 @@ const FEATURES = [
   { icon: BarChart3, title: "99.99% Uptime SLA", desc: "Redundant power, multi-gig uplinks, and real-time monitoring back every plan." },
   { icon: Lock, title: "Encrypted Backups", desc: "Daily automatic encrypted snapshots with one-click point-in-time restore." },
   { icon: Headset, title: "24/7 Expert Support", desc: "Our sysadmins and gamers are online around the clock — no bots, just humans." },
+  { icon: Network, title: "Anycast Network", desc: "Global anycast routing ensures the lowest latency to your users worldwide." },
+  { icon: RefreshCw, title: "Auto-Scaling Resources", desc: "Scale CPU and RAM up or down instantly without migrating your server." },
+  { icon: Eye, title: "Real-Time Monitoring", desc: "Full visibility into CPU, RAM, bandwidth, and network with live dashboards." },
+  { icon: Database, title: "RAID-10 Storage", desc: "RAID-10 arrays with hot-swap drives ensure zero data loss under any failure." },
+  { icon: CloudLightning, title: "Pterodactyl Panel", desc: "Powerful game panel with file manager, console access, and mod installation." },
+  { icon: Terminal, title: "Full Root Access", desc: "SSH root access on VPS/VDS — install anything, configure everything." },
+];
+
+const LOCATIONS = [
+  { city: "New York", country: "United States", flag: "🇺🇸", region: "North America", ping: "~2ms", status: "online", nodes: 48 },
+  { city: "Los Angeles", country: "United States", flag: "🇺🇸", region: "North America", ping: "~5ms", status: "online", nodes: 32 },
+  { city: "London", country: "United Kingdom", flag: "🇬🇧", region: "Europe", ping: "~8ms", status: "online", nodes: 40 },
+  { city: "Frankfurt", country: "Germany", flag: "🇩🇪", region: "Europe", ping: "~10ms", status: "online", nodes: 56 },
+  { city: "Amsterdam", country: "Netherlands", flag: "🇳🇱", region: "Europe", ping: "~9ms", status: "online", nodes: 28 },
+  { city: "Singapore", country: "Singapore", flag: "🇸🇬", region: "Asia Pacific", ping: "~15ms", status: "online", nodes: 36 },
+  { city: "Tokyo", country: "Japan", flag: "🇯🇵", region: "Asia Pacific", ping: "~18ms", status: "online", nodes: 24 },
+  { city: "Sydney", country: "Australia", flag: "🇦🇺", region: "Asia Pacific", ping: "~20ms", status: "online", nodes: 20 },
+  { city: "São Paulo", country: "Brazil", flag: "🇧🇷", region: "South America", ping: "~12ms", status: "online", nodes: 18 },
+  { city: "Toronto", country: "Canada", flag: "🇨🇦", region: "North America", ping: "~4ms", status: "online", nodes: 22 },
+  { city: "Paris", country: "France", flag: "🇫🇷", region: "Europe", ping: "~11ms", status: "online", nodes: 30 },
+  { city: "Mumbai", country: "India", flag: "🇮🇳", region: "Asia Pacific", ping: "~22ms", status: "online", nodes: 16 },
+];
+
+const TESTIMONIALS = [
+  {
+    name: "Alex Rivera",
+    role: "Minecraft Server Owner",
+    avatar: "AR",
+    text: "Switched from a competitor and the difference is night and day. Zero lag spikes, instant support, and the DDoS protection actually works. Our 500-player network runs flawlessly.",
+    stars: 5,
+    service: "Minecraft Hosting",
+  },
+  {
+    name: "TechBot Studio",
+    role: "Discord Bot Developer",
+    avatar: "TB",
+    text: "We host 12 production bots here. 99.9% uptime month after month. The dashboard is clean, deploys take seconds, and pricing is the best I've found anywhere.",
+    stars: 5,
+    service: "Bot Hosting",
+  },
+  {
+    name: "Sarah K.",
+    role: "SaaS Founder",
+    avatar: "SK",
+    text: "Moved our entire SaaS stack to ArveX VPS. Setup was effortless, root access is real, and NVMe performance is insane. Our app loads 3x faster than before.",
+    stars: 5,
+    service: "VPS Hosting",
+  },
+  {
+    name: "GameZone Network",
+    role: "Multi-Game Community",
+    avatar: "GZ",
+    text: "We run 20+ game servers across VPS and VDS. ArveX's team actually helped us configure everything. That kind of white-glove support at this price point is unmatched.",
+    stars: 5,
+    service: "VDS Hosting",
+  },
+  {
+    name: "Mark T.",
+    role: "WordPress Developer",
+    avatar: "MT",
+    text: "Web hosting with cPanel and 1-click WordPress makes client work so much faster. SSL provisioning is instant and the uptime has been rock solid for 18 months.",
+    stars: 5,
+    service: "Web Hosting",
+  },
+  {
+    name: "ProxyMax Ltd.",
+    role: "Network Engineer",
+    avatar: "PM",
+    text: "V2Ray performance is phenomenal. VMess throughput beats everything I've tested. The enterprise network stack and 10 Gbps ports make all the difference.",
+    stars: 5,
+    service: "V2Ray Proxy",
+  },
+];
+
+const FAQS = [
+  {
+    q: "How fast is deployment after ordering?",
+    a: "Most servers are provisioned automatically and live within 60 seconds of payment confirmation. VDS and custom configurations may take up to 5 minutes. You'll receive login credentials via email immediately."
+  },
+  {
+    q: "What DDoS protection do you offer?",
+    a: "All plans include our 10 Tbps always-on DDoS mitigation at no extra cost. We use multi-layer filtering including volumetric, protocol, and application-layer (L7) attack mitigation with automatic detection and null-routing."
+  },
+  {
+    q: "Can I upgrade or downgrade my plan?",
+    a: "Yes — plan upgrades and downgrades are available anytime from your client dashboard. Upgrades are instant. Downgrades apply at the end of your billing cycle with no data loss."
+  },
+  {
+    q: "Do you offer a money-back guarantee?",
+    a: "We offer a 3-day money-back guarantee on all new orders. If you're not satisfied, contact our billing team within 72 hours of your first order and we'll issue a full refund, no questions asked."
+  },
+  {
+    q: "What control panel do you use?",
+    a: "Game servers (Minecraft, etc.) use Pterodactyl panel — a modern, feature-rich panel with file manager, console, backups, and mod support. VPS/VDS use Proxmox with optional ISPConfig or DirectAdmin add-ons. Web hosting uses cPanel."
+  },
+  {
+    q: "Do you support custom ISOs and operating systems?",
+    a: "VPS and VDS plans support a wide range of operating systems including Ubuntu, Debian, CentOS, Rocky Linux, AlmaLinux, Fedora, and Windows Server. Custom ISO uploads are available on request."
+  },
+  {
+    q: "Is there a setup fee?",
+    a: "No setup fees, ever. The price you see is the price you pay. No contracts, no hidden charges, cancel anytime."
+  },
+  {
+    q: "Where are your servers located?",
+    a: "We have nodes in 12+ locations across North America, Europe, Asia Pacific, and South America. You can choose your preferred datacenter during checkout, and migrations between locations are available."
+  },
+];
+
+const COMPARE_FEATURES = [
+  { feature: "NVMe SSD Storage", arvex: true, competitor1: false, competitor2: true },
+  { feature: "10 Tbps DDoS Protection", arvex: true, competitor1: false, competitor2: false },
+  { feature: "Instant Deployment (<60s)", arvex: true, competitor1: false, competitor2: false },
+  { feature: "24/7 Human Support", arvex: true, competitor1: true, competitor2: false },
+  { feature: "99.99% Uptime SLA", arvex: true, competitor1: false, competitor2: true },
+  { feature: "Free Daily Backups", arvex: true, competitor1: false, competitor2: false },
+  { feature: "Anycast Global Network", arvex: true, competitor1: false, competitor2: false },
+  { feature: "No Setup Fees", arvex: true, competitor1: false, competitor2: true },
+  { feature: "Root/Admin Access", arvex: true, competitor1: true, competitor2: true },
+  { feature: "Custom ISO Support", arvex: true, competitor1: false, competitor2: false },
 ];
 
 export default function Home() {
@@ -41,8 +166,12 @@ export default function Home() {
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [locationRegion, setLocationRegion] = useState("All");
 
   const partnerList = partners ?? [];
+  const regions = ["All", "North America", "Europe", "Asia Pacific", "South America"];
+  const filteredLocations = locationRegion === "All" ? LOCATIONS : LOCATIONS.filter(l => l.region === locationRegion);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -73,7 +202,7 @@ export default function Home() {
                 className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/10 border border-primary/30 mb-8 border-glow"
               >
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.8)]" />
-                <span className="text-xs font-bold tracking-widest text-primary uppercase">Game Servers — Always Online</span>
+                <span className="text-xs font-bold tracking-widest text-primary uppercase">12 Global Datacenters — Always Online</span>
               </motion.div>
 
               <motion.h1
@@ -122,7 +251,7 @@ export default function Home() {
                 transition={{ delay: 0.8, duration: 0.6 }}
                 className="mt-16 flex flex-wrap items-center justify-center gap-8"
               >
-                {["99.99% Uptime", "10 Tbps DDoS", "24/7 Support", "NVMe SSD"].map((badge, i) => (
+                {["99.99% Uptime", "10 Tbps DDoS", "24/7 Support", "NVMe SSD", "12 Locations"].map((badge, i) => (
                   <div key={i} className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     <div className="w-1 h-1 rounded-full bg-primary" />
                     {badge}
@@ -138,24 +267,28 @@ export default function Home() {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                { label: "Active Players", value: stats?.activeCustomers ?? "50,000+" },
-                { label: "Live Nodes", value: stats?.activeServers ?? "12,000+" },
-                { label: "Uptime", value: `${stats?.uptimePercent ?? 99.99}%` },
-                { label: "Support", value: stats?.supportAvailability ?? "24/7/365" },
-              ].map((stat, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="text-center glass-panel p-6 rounded-2xl border-glow relative overflow-hidden group"
-                >
-                  <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="text-4xl md:text-5xl font-black text-white mb-2 tracking-tighter glow-text">{stat.value}</div>
-                  <div className="text-xs font-bold text-primary/80 uppercase tracking-widest">{stat.label}</div>
-                </motion.div>
-              ))}
+                { label: "Active Players", value: stats?.activeCustomers ?? "50,000+", icon: Award },
+                { label: "Live Nodes", value: stats?.activeServers ?? "12,000+", icon: Server },
+                { label: "Uptime", value: `${stats?.uptimePercent ?? 99.99}%`, icon: Gauge },
+                { label: "Support", value: stats?.supportAvailability ?? "24/7/365", icon: Clock },
+              ].map((stat, i) => {
+                const Icon = stat.icon;
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="text-center glass-panel p-6 rounded-2xl border-glow relative overflow-hidden group"
+                  >
+                    <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <Icon className="w-6 h-6 text-primary/60 mx-auto mb-2" />
+                    <div className="text-4xl md:text-5xl font-black text-white mb-2 tracking-tighter glow-text">{stat.value}</div>
+                    <div className="text-xs font-bold text-primary/80 uppercase tracking-widest">{stat.label}</div>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -244,6 +377,9 @@ export default function Home() {
               <h2 className="text-4xl md:text-5xl font-black text-white glow-text mb-4 uppercase tracking-tight">
                 Built For Perfectionists
               </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto font-medium">
+                Every feature engineered to give you maximum performance, security, and control.
+              </p>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -255,7 +391,7 @@ export default function Home() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.08 }}
+                    transition={{ delay: i * 0.06 }}
                     className="glass-panel p-8 rounded-2xl group hover:border-glow transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
                   >
                     <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-[40px] group-hover:bg-primary/20 transition-all duration-500" />
@@ -268,6 +404,102 @@ export default function Home() {
                 );
               })}
             </div>
+          </div>
+        </section>
+
+        {/* ── Server Locations ── */}
+        <section className="py-28 relative z-20 overflow-hidden border-y border-white/5">
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-primary/8 rounded-full blur-[100px] pointer-events-none" />
+          <div className="container mx-auto px-4 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <div className="inline-block px-4 py-1 rounded-full border border-primary/30 bg-primary/10 text-xs font-bold text-primary uppercase tracking-widest mb-4">
+                Global Infrastructure
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black text-white glow-text mb-4 uppercase tracking-tight">
+                12+ Server Locations
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto font-medium text-lg">
+                Deploy your server closest to your players. Ultra-low latency across 4 continents.
+              </p>
+            </motion.div>
+
+            <div className="flex flex-wrap justify-center gap-3 mb-10">
+              {regions.map((region) => (
+                <button
+                  key={region}
+                  onClick={() => setLocationRegion(region)}
+                  className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+                    locationRegion === region
+                      ? "bg-primary text-white border-glow shadow-[0_0_15px_rgba(124,58,237,0.4)]"
+                      : "glass-panel text-muted-foreground hover:text-white hover:border-primary/40"
+                  }`}
+                >
+                  {region}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
+              {filteredLocations.map((loc, i) => (
+                <motion.div
+                  key={loc.city}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="glass-panel p-5 rounded-2xl group hover:border-glow transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-full blur-[30px] opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="text-3xl">{loc.flag}</div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.8)] animate-pulse" />
+                      <span className="text-[10px] font-bold text-green-400 uppercase tracking-wider">Online</span>
+                    </div>
+                  </div>
+                  <div className="font-black text-white text-lg uppercase tracking-tight leading-none mb-1">{loc.city}</div>
+                  <div className="text-xs text-muted-foreground font-medium mb-4">{loc.country}</div>
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5">
+                      <MapPin className="w-3 h-3 text-primary/60" />
+                      <span className="text-muted-foreground font-medium">{loc.region}</span>
+                    </div>
+                    <div className="font-black text-primary">{loc.ping}</div>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Active Nodes</span>
+                    <span className="text-white font-bold">{loc.nodes}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mt-12 text-center"
+            >
+              <div className="inline-flex items-center gap-8 glass-panel px-8 py-4 rounded-2xl">
+                {[
+                  { label: "Datacenters", value: "12+" },
+                  { label: "Total Nodes", value: "370+" },
+                  { label: "Avg Latency", value: "<20ms" },
+                  { label: "Network", value: "10 Gbps" },
+                ].map((s, i) => (
+                  <div key={i} className="text-center">
+                    <div className="text-2xl font-black text-white">{s.value}</div>
+                    <div className="text-xs text-muted-foreground uppercase tracking-wider font-medium">{s.label}</div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
           </div>
         </section>
 
@@ -323,6 +555,135 @@ export default function Home() {
           </section>
         )}
 
+        {/* ── Testimonials ── */}
+        <section className="py-28 relative z-20 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-violet-950/10 to-transparent pointer-events-none" />
+          <div className="container mx-auto px-4 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <div className="inline-block px-4 py-1 rounded-full border border-primary/30 bg-primary/10 text-xs font-bold text-primary uppercase tracking-widest mb-4">
+                Customer Reviews
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black text-white glow-text mb-4 uppercase tracking-tight">
+                What Our Clients Say
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto font-medium text-lg">
+                Real feedback from real customers. No fake reviews — just honest opinions.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+              {TESTIMONIALS.map((t, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="glass-panel p-8 rounded-2xl group hover:border-glow transition-all duration-300 hover:-translate-y-1 flex flex-col relative overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-full blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <Quote className="w-8 h-8 text-primary/40 mb-4" />
+                  <div className="flex gap-1 mb-4">
+                    {Array.from({ length: t.stars }).map((_, s) => (
+                      <Star key={s} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <p className="text-muted-foreground font-medium leading-relaxed text-sm flex-1 mb-6">"{t.text}"</p>
+                  <div className="flex items-center gap-3 pt-4 border-t border-white/10">
+                    <div className="w-10 h-10 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center font-black text-primary text-sm">
+                      {t.avatar}
+                    </div>
+                    <div>
+                      <div className="text-white font-bold text-sm">{t.name}</div>
+                      <div className="text-muted-foreground text-xs">{t.role}</div>
+                    </div>
+                    <div className="ml-auto">
+                      <span className="text-[10px] font-bold text-primary/70 uppercase tracking-wider bg-primary/10 px-2 py-1 rounded-full">{t.service}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Comparison Table ── */}
+        <section className="py-24 relative z-20 border-y border-white/5 bg-black/30">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <div className="inline-block px-4 py-1 rounded-full border border-primary/30 bg-primary/10 text-xs font-bold text-primary uppercase tracking-widest mb-4">
+                Why Choose Us
+              </div>
+              <h2 className="text-4xl md:text-5xl font-black text-white glow-text mb-4 uppercase tracking-tight">
+                ArveX vs The Competition
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto font-medium">
+                See why thousands of customers switched to ArveX and never looked back.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-4xl mx-auto glass-panel rounded-2xl overflow-hidden"
+            >
+              <div className="grid grid-cols-4 bg-black/40 p-4 border-b border-white/10">
+                <div className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Feature</div>
+                <div className="text-center">
+                  <div className="text-sm font-black text-white uppercase tracking-tight">ArveX</div>
+                  <div className="text-[10px] text-primary font-bold tracking-wider">YOU ARE HERE</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-bold text-muted-foreground uppercase">Competitor A</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-bold text-muted-foreground uppercase">Competitor B</div>
+                </div>
+              </div>
+              {COMPARE_FEATURES.map((row, i) => (
+                <div
+                  key={i}
+                  className={`grid grid-cols-4 p-4 border-b border-white/5 last:border-0 transition-colors hover:bg-white/3 ${i % 2 === 0 ? "" : "bg-white/2"}`}
+                >
+                  <div className="text-sm text-muted-foreground font-medium flex items-center">{row.feature}</div>
+                  <div className="flex justify-center items-center">
+                    {row.arvex ? (
+                      <CheckCircle2 className="w-5 h-5 text-green-400 drop-shadow-[0_0_6px_rgba(74,222,128,0.8)]" />
+                    ) : (
+                      <span className="text-red-500/60 font-bold text-lg">✕</span>
+                    )}
+                  </div>
+                  <div className="flex justify-center items-center">
+                    {row.competitor1 ? (
+                      <CheckCircle2 className="w-5 h-5 text-muted-foreground/50" />
+                    ) : (
+                      <span className="text-red-500/60 font-bold text-lg">✕</span>
+                    )}
+                  </div>
+                  <div className="flex justify-center items-center">
+                    {row.competitor2 ? (
+                      <CheckCircle2 className="w-5 h-5 text-muted-foreground/50" />
+                    ) : (
+                      <span className="text-red-500/60 font-bold text-lg">✕</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
         {/* ── Pricing Teaser ── */}
         <section className="py-24 relative z-20">
           <div className="container mx-auto px-4">
@@ -352,6 +713,80 @@ export default function Home() {
                 </Link>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* ── FAQ ── */}
+        <section className="py-28 relative z-20 overflow-hidden border-t border-white/5">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent pointer-events-none" />
+          <div className="container mx-auto px-4 relative z-10 max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <div className="inline-block px-4 py-1 rounded-full border border-primary/30 bg-primary/10 text-xs font-bold text-primary uppercase tracking-widest mb-4">
+                FAQ
+              </div>
+              <h2 className="text-4xl md:text-5xl font-black text-white glow-text mb-4 uppercase tracking-tight">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-muted-foreground max-w-xl mx-auto font-medium">
+                Everything you need to know before deploying with ArveX.
+              </p>
+            </motion.div>
+
+            <div className="space-y-3">
+              {FAQS.map((faq, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.04 }}
+                >
+                  <button
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    className={`w-full glass-panel p-6 rounded-2xl flex items-center justify-between text-left transition-all duration-300 group ${
+                      openFaq === i ? "border-glow" : "hover:border-primary/30"
+                    }`}
+                  >
+                    <span className={`font-bold text-sm uppercase tracking-wide transition-colors ${openFaq === i ? "text-primary" : "text-white group-hover:text-primary"}`}>
+                      {faq.q}
+                    </span>
+                    <ChevronDown className={`w-5 h-5 text-primary shrink-0 ml-4 transition-transform duration-300 ${openFaq === i ? "rotate-180" : ""}`} />
+                  </button>
+                  {openFaq === i && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="glass-panel mx-2 px-6 py-5 rounded-b-2xl rounded-t-none border-t-0 -mt-2 text-sm text-muted-foreground font-medium leading-relaxed"
+                    >
+                      {faq.a}
+                    </motion.div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mt-12"
+            >
+              <p className="text-muted-foreground font-medium mb-4">Still have questions?</p>
+              <div className="flex flex-wrap justify-center gap-4">
+                <Link href="/register">
+                  <Button className="btn-glow bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider">
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Open a Support Ticket
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
           </div>
         </section>
 

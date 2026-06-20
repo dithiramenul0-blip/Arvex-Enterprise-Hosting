@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Users, Server, Ticket, Settings, LogOut, ArrowLeft, Building, Zap, Cpu, Terminal } from "lucide-react";
+import { LayoutDashboard, Users, Server, Ticket, Settings, LogOut, ArrowLeft, Building, Zap, Cpu, Terminal, Globe, Paintbrush } from "lucide-react";
 import { ReactNode } from "react";
 import { PageTransition } from "./PageTransition";
 
@@ -13,6 +13,8 @@ export function AdminLayout({ children }: { children: ReactNode }) {
 
   const links = [
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
+    { href: "/admin/site-settings", label: "Site Customizer", icon: Paintbrush },
+    { href: "/admin/content", label: "Content Pages", icon: Globe },
     { href: "/admin/provisions", label: "Server Control", icon: Terminal },
     { href: "/admin/users", label: "Users", icon: Users },
     { href: "/admin/plans", label: "Plans", icon: Settings },
@@ -22,7 +24,6 @@ export function AdminLayout({ children }: { children: ReactNode }) {
     { href: "/admin/partners", label: "Partners", icon: Building },
     { href: "/admin/pterodactyl", label: "Pterodactyl", icon: Zap },
     { href: "/admin/proxmox", label: "Proxmox", icon: Cpu },
-    { href: "/admin/content", label: "Content Pages", icon: Settings },
   ];
 
   return (
