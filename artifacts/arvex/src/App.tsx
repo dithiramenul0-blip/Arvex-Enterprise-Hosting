@@ -50,6 +50,7 @@ import AdminDiscordWebhooks from "@/pages/admin/DiscordWebhooks";
 import AdminSEO from "@/pages/admin/SEO";
 import AdminFileManager from "@/pages/admin/FileManager";
 import AdminBillingSettings from "@/pages/admin/BillingSettings";
+import { ChatWidget } from "@/components/ChatWidget";
 
 const queryClient = new QueryClient();
 
@@ -151,6 +152,7 @@ function App() {
             <Router />
           </WouterRouter>
           <Toaster />
+          <ChatWidget />
         </TooltipProvider>
       </AuthProvider>
     </QueryClientProvider>

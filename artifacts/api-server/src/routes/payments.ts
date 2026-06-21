@@ -56,7 +56,7 @@ router.post("/payments/stripe/create-session", authenticate, async (req: AuthReq
 
   try {
     const Stripe = (await import("stripe")).default;
-    const stripe = new Stripe(stripeKey, { apiVersion: "2025-05-28.basil" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2026-05-27.dahlia" });
 
     const price = parseFloat(plan.price as unknown as string);
     const returnBase = process.env.REPLIT_DOMAINS
@@ -94,7 +94,7 @@ router.post("/payments/stripe/webhook", async (req, res) => {
 
   try {
     const Stripe = (await import("stripe")).default;
-    const stripe = new Stripe(stripeKey, { apiVersion: "2025-05-28.basil" });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2026-05-27.dahlia" });
 
     let event;
     if (webhookSecret) {

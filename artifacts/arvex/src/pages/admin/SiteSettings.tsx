@@ -7,7 +7,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useGetSiteSettings, useUpdateSiteSettings } from "@workspace/api-client-react";
 import {
   Globe, Zap, MapPin, Star, MessageSquare, Shield, Server,
-  Save, Plus, Trash2, ChevronDown, ChevronUp, RefreshCw, Loader2, CheckCircle2
+  Save, Plus, Trash2, ChevronDown, ChevronUp, RefreshCw, Loader2, CheckCircle2,
+  Palette, Link2, Bell, Image, Mail
 } from "lucide-react";
 
 type Service = { key: string; title: string; href: string; desc: string; badge: string };
@@ -31,6 +32,20 @@ interface SiteSettings {
   ctaSubtitle: string;
   footerTagline: string;
   pricingFrom: string;
+  brandSiteName: string;
+  brandLogoUrl: string;
+  brandPrimaryColor: string;
+  brandTagline: string;
+  brandDiscordUrl: string;
+  brandTwitterUrl: string;
+  brandYoutubeUrl: string;
+  brandSupportEmail: string;
+  brandBillingEmail: string;
+  brandHeroBgUrl: string;
+  brandHeroOverlayOpacity: string;
+  brandAnnouncementEnabled: boolean;
+  brandAnnouncementText: string;
+  brandAnnouncementColor: string;
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
@@ -82,6 +97,20 @@ const DEFAULT_SETTINGS: SiteSettings = {
   ctaSubtitle: "Deploy your premium infrastructure in seconds and experience the ArveX difference today.",
   footerTagline: "Powering the world's best game servers. Elite infrastructure for communities that demand perfection.",
   pricingFrom: "$1.99",
+  brandSiteName: "",
+  brandLogoUrl: "",
+  brandPrimaryColor: "",
+  brandTagline: "",
+  brandDiscordUrl: "",
+  brandTwitterUrl: "",
+  brandYoutubeUrl: "",
+  brandSupportEmail: "support@arvexhosting.com",
+  brandBillingEmail: "billing@arvexhosting.com",
+  brandHeroBgUrl: "",
+  brandHeroOverlayOpacity: "0.85",
+  brandAnnouncementEnabled: false,
+  brandAnnouncementText: "",
+  brandAnnouncementColor: "primary",
 };
 
 function settingsToKv(s: SiteSettings): Record<string, string> {
@@ -99,6 +128,20 @@ function settingsToKv(s: SiteSettings): Record<string, string> {
     ctaSubtitle: s.ctaSubtitle,
     footerTagline: s.footerTagline,
     pricingFrom: s.pricingFrom,
+    brand_site_name: s.brandSiteName,
+    brand_logo_url: s.brandLogoUrl,
+    brand_primary_color: s.brandPrimaryColor,
+    brand_tagline: s.brandTagline,
+    brand_discord_url: s.brandDiscordUrl,
+    brand_twitter_url: s.brandTwitterUrl,
+    brand_youtube_url: s.brandYoutubeUrl,
+    brand_support_email: s.brandSupportEmail,
+    brand_billing_email: s.brandBillingEmail,
+    brand_hero_bg_url: s.brandHeroBgUrl,
+    brand_hero_overlay_opacity: s.brandHeroOverlayOpacity,
+    brand_announcement_enabled: String(s.brandAnnouncementEnabled),
+    brand_announcement_text: s.brandAnnouncementText,
+    brand_announcement_color: s.brandAnnouncementColor,
   };
 }
 
@@ -120,6 +163,20 @@ function kvToSettings(kv: Record<string, string>): SiteSettings {
     ctaSubtitle: kv.ctaSubtitle ?? DEFAULT_SETTINGS.ctaSubtitle,
     footerTagline: kv.footerTagline ?? DEFAULT_SETTINGS.footerTagline,
     pricingFrom: kv.pricingFrom ?? DEFAULT_SETTINGS.pricingFrom,
+    brandSiteName: kv.brand_site_name ?? "",
+    brandLogoUrl: kv.brand_logo_url ?? "",
+    brandPrimaryColor: kv.brand_primary_color ?? "",
+    brandTagline: kv.brand_tagline ?? "",
+    brandDiscordUrl: kv.brand_discord_url ?? "",
+    brandTwitterUrl: kv.brand_twitter_url ?? "",
+    brandYoutubeUrl: kv.brand_youtube_url ?? "",
+    brandSupportEmail: kv.brand_support_email ?? "support@arvexhosting.com",
+    brandBillingEmail: kv.brand_billing_email ?? "billing@arvexhosting.com",
+    brandHeroBgUrl: kv.brand_hero_bg_url ?? "",
+    brandHeroOverlayOpacity: kv.brand_hero_overlay_opacity ?? "0.85",
+    brandAnnouncementEnabled: kv.brand_announcement_enabled === "true",
+    brandAnnouncementText: kv.brand_announcement_text ?? "",
+    brandAnnouncementColor: kv.brand_announcement_color ?? "primary",
   };
 }
 
@@ -373,6 +430,133 @@ export default function AdminSiteSettings() {
           <Button variant="outline" onClick={() => addListItem<Faq>("faqs", { q: "New question?", a: "Answer here." })} className="w-full border-dashed border-white/20 text-muted-foreground hover:text-white hover:border-primary/40">
             <Plus className="w-4 h-4 mr-2" /> Add FAQ
           </Button>
+        </div>
+      </SectionCard>
+
+      {/* Branding & Appearance */}
+      <SectionCard title="Branding & Appearance" icon={Palette} defaultOpen>
+        <div className="space-y-6 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Site Name</label>
+              <Input value={settings.brandSiteName} onChange={e => update("brandSiteName", e.target.value)} placeholder="ArveX" className="bg-black/50 border-white/10 text-white" />
+              <p className="text-xs text-muted-foreground mt-1">Shown in navbar, footer, and browser tab</p>
+            </div>
+            <div>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Footer Tagline</label>
+              <Input value={settings.brandTagline} onChange={e => update("brandTagline", e.target.value)} placeholder="Elite infrastructure for..." className="bg-black/50 border-white/10 text-white" />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block flex items-center gap-2"><Image className="w-3 h-3" /> Logo URL</label>
+            <Input value={settings.brandLogoUrl} onChange={e => update("brandLogoUrl", e.target.value)} placeholder="https://your-cdn.com/logo.png" className="bg-black/50 border-white/10 text-white" />
+            {settings.brandLogoUrl && (
+              <div className="mt-2 p-3 bg-black/30 rounded-lg border border-white/5 flex items-center gap-3">
+                <img src={settings.brandLogoUrl} alt="Logo preview" className="w-10 h-10 object-contain rounded" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                <span className="text-xs text-muted-foreground">Logo preview</span>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block flex items-center gap-2"><Image className="w-3 h-3" /> Hero Background Image URL</label>
+            <Input value={settings.brandHeroBgUrl} onChange={e => update("brandHeroBgUrl", e.target.value)} placeholder="https://images.unsplash.com/photo-...?w=1920" className="bg-black/50 border-white/10 text-white" />
+            <p className="text-xs text-muted-foreground mt-1">Leave empty to use the default datacenter photo</p>
+            {settings.brandHeroBgUrl && (
+              <div className="mt-2 rounded-lg overflow-hidden h-24 border border-white/10 relative">
+                <img src={settings.brandHeroBgUrl} alt="Hero preview" className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                  <span className="text-xs text-white font-bold">Hero Preview</span>
+                </div>
+              </div>
+            )}
+            <div className="mt-3">
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Hero Overlay Opacity (0.5 = lighter, 0.95 = darker)</label>
+              <div className="flex items-center gap-3">
+                <input type="range" min="0.3" max="0.98" step="0.05" value={settings.brandHeroOverlayOpacity}
+                  onChange={e => update("brandHeroOverlayOpacity", e.target.value)}
+                  className="flex-1 accent-primary" />
+                <span className="text-sm text-white font-mono w-12 text-right">{settings.brandHeroOverlayOpacity}</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block flex items-center gap-2"><Palette className="w-3 h-3" /> Brand Primary Color</label>
+            <div className="flex items-center gap-3">
+              <input type="color" value={settings.brandPrimaryColor || "#7c3aed"}
+                onChange={e => update("brandPrimaryColor", e.target.value)}
+                className="w-12 h-10 rounded-lg border border-white/10 bg-black/50 cursor-pointer p-1" />
+              <Input value={settings.brandPrimaryColor} onChange={e => update("brandPrimaryColor", e.target.value)} placeholder="#7c3aed (leave empty for default purple)" className="bg-black/50 border-white/10 text-white flex-1" />
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Hex color code. Leave empty to use default purple.</p>
+          </div>
+        </div>
+      </SectionCard>
+
+      {/* Social Links & Contact */}
+      <SectionCard title="Social Links & Contact" icon={Link2}>
+        <div className="space-y-4 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Discord Server URL</label>
+              <Input value={settings.brandDiscordUrl} onChange={e => update("brandDiscordUrl", e.target.value)} placeholder="https://discord.gg/yourinvite" className="bg-black/50 border-white/10 text-white" />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Twitter / X URL</label>
+              <Input value={settings.brandTwitterUrl} onChange={e => update("brandTwitterUrl", e.target.value)} placeholder="https://x.com/youraccount" className="bg-black/50 border-white/10 text-white" />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">YouTube Channel URL</label>
+              <Input value={settings.brandYoutubeUrl} onChange={e => update("brandYoutubeUrl", e.target.value)} placeholder="https://youtube.com/@yourchannel" className="bg-black/50 border-white/10 text-white" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block flex items-center gap-1"><Mail className="w-3 h-3" /> Support Email</label>
+              <Input value={settings.brandSupportEmail} onChange={e => update("brandSupportEmail", e.target.value)} placeholder="support@yourdomain.com" className="bg-black/50 border-white/10 text-white" />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block flex items-center gap-1"><Mail className="w-3 h-3" /> Billing Email</label>
+              <Input value={settings.brandBillingEmail} onChange={e => update("brandBillingEmail", e.target.value)} placeholder="billing@yourdomain.com" className="bg-black/50 border-white/10 text-white" />
+            </div>
+          </div>
+        </div>
+      </SectionCard>
+
+      {/* Announcement Bar */}
+      <SectionCard title="Announcement Bar" icon={Bell}>
+        <div className="space-y-4 mt-4">
+          <div className="flex items-center gap-3 p-3 bg-black/30 rounded-xl border border-white/5">
+            <button
+              onClick={() => update("brandAnnouncementEnabled", !settings.brandAnnouncementEnabled)}
+              className={`relative w-11 h-6 rounded-full transition-colors ${settings.brandAnnouncementEnabled ? "bg-primary" : "bg-white/10"}`}
+            >
+              <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${settings.brandAnnouncementEnabled ? "left-5.5 translate-x-0.5" : "left-0.5"}`} />
+            </button>
+            <span className="text-sm font-bold text-white">{settings.brandAnnouncementEnabled ? "Enabled — banner is visible on website" : "Disabled — no banner shown"}</span>
+          </div>
+          <div>
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Announcement Text</label>
+            <Input value={settings.brandAnnouncementText} onChange={e => update("brandAnnouncementText", e.target.value)} placeholder="🎉 Special offer: 50% off first month! Use code LAUNCH50" className="bg-black/50 border-white/10 text-white" />
+          </div>
+          <div>
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 block">Banner Color</label>
+            <div className="flex gap-2 flex-wrap">
+              {[
+                { value: "primary", label: "Purple", cls: "bg-primary/20 border-primary/40 text-primary" },
+                { value: "yellow", label: "Yellow", cls: "bg-yellow-500/20 border-yellow-500/40 text-yellow-300" },
+                { value: "green", label: "Green", cls: "bg-green-500/20 border-green-500/40 text-green-300" },
+                { value: "red", label: "Red", cls: "bg-red-500/20 border-red-500/40 text-red-300" },
+              ].map(opt => (
+                <button key={opt.value} onClick={() => update("brandAnnouncementColor", opt.value)}
+                  className={`px-4 py-2 rounded-lg border font-bold text-xs uppercase tracking-wider transition-all ${opt.cls} ${settings.brandAnnouncementColor === opt.value ? "ring-2 ring-white/30 scale-105" : "opacity-60 hover:opacity-100"}`}>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </SectionCard>
 

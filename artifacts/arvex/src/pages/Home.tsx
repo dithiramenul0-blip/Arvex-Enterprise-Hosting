@@ -182,6 +182,11 @@ export default function Home() {
   const heroTitle = kv?.heroTitle ?? "Enterprise Hosting Solutions";
   const heroSubtitle = kv?.heroSubtitle ?? "High-performance VPS, Minecraft, Bot, VDS, Web, and V2Ray infrastructure built on ultra-fast NVMe arrays. Join over 50,000 players trusting ArveX.";
   const pricingFrom = kv?.pricingFrom ?? "$1.99";
+  const heroBgUrl = kv?.brand_hero_bg_url || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1920&q=80";
+  const heroOverlay = parseFloat(kv?.brand_hero_overlay_opacity || "0.85");
+  const announcementEnabled = kv?.brand_announcement_enabled === "true";
+  const announcementText = kv?.brand_announcement_text || "";
+  const announcementColor = kv?.brand_announcement_color || "primary";
   const ctaTitle = kv?.ctaTitle ?? "Ready to Dominate?";
   const ctaSubtitle = kv?.ctaSubtitle ?? "Deploy your premium infrastructure in seconds and experience the ArveX difference today.";
 
@@ -234,9 +239,9 @@ export default function Home() {
           <motion.div style={{ y: heroY }} className="absolute inset-0 z-0">
             <div
               className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1920&q=80)` }}
+              style={{ backgroundImage: `url(${heroBgUrl})` }}
             />
-            <div className="absolute inset-0 bg-background/85" />
+            <div className="absolute inset-0" style={{ backgroundColor: `rgba(0,0,0,${heroOverlay})` }} />
             <div className="hero-grid absolute inset-0" />
           </motion.div>
 

@@ -14,6 +14,7 @@ import provisioningRouter from "./provisioning.js";
 import siteSettingsRouter from "./site-settings.js";
 import billingSettingsRouter from "./billing-settings.js";
 import paymentsRouter from "./payments.js";
+import chatRouter from "./chat.js";
 
 const router: IRouter = Router();
 
@@ -32,5 +33,6 @@ router.use("/stats", statsRouter);
 router.use(siteSettingsRouter);
 router.use(billingSettingsRouter);
 router.use(paymentsRouter);
+router.use(chatRouter);
 
 export default router;

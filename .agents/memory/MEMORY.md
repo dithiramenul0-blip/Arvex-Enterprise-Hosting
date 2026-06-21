@@ -1,0 +1,3 @@
+- [Admin role & save fix](admin-role-fix.md) — the only user was `Arvexfire@gmail.com`; role must be `admin` in DB for save to work; JWT must be refreshed (re-login) after role change.
+- [Brand settings keys](brand-settings.md) — brand config uses `brand_*` keys in `site_settings` KV table; read via `useBrandSettings` hook; applied in Navbar, Footer, Hero.
+- [Stripe API version](stripe-api-version.md) — correct Stripe API version is `2026-05-27.dahlia`; `2025-05-28.basil` causes TS errors.
