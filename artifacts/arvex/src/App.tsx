@@ -50,6 +50,7 @@ import AdminDiscordWebhooks from "@/pages/admin/DiscordWebhooks";
 import AdminSEO from "@/pages/admin/SEO";
 import AdminFileManager from "@/pages/admin/FileManager";
 import AdminBillingSettings from "@/pages/admin/BillingSettings";
+import Setup from "@/pages/Setup";
 import { ChatWidget } from "@/components/ChatWidget";
 
 const queryClient = new QueryClient();
@@ -92,6 +93,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="/setup" component={Setup} />
 
       {/* Content */}
       <Route path="/terms">{() => <ContentPage slug="terms" />}</Route>
